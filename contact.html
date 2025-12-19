@@ -10,6 +10,7 @@
 <body class="page-wrap">
     <header class="navbar">
         <div class="brand">JobLaunch</div>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
         <div class="nav-links">
             <a href="index.html">Home</a>
             <a href="catagories.html">Categories</a>
@@ -25,18 +26,19 @@
 
     <main class="contact-section">
         <h1 class="section-title">ContactUs</h1>
-        <form class="contact-form">
+        <form class="contact-form" data-validate>
             <div class="contact-grid">
                 <div class="contact-grid_inputs">
-                  <input class="input" type="text" placeholder="Full Name">
-                  <input class="input" type="tel" placeholder="Phone Number">
-                  <input class="input" type="email" placeholder="Email Address">
-                  <input class="input" type="text" placeholder="Email Subject">
+                  <input class="input" type="text" name="fullName" placeholder="Full Name" aria-label="Full Name" required>
+                  <input class="input" type="tel" name="phone" placeholder="Phone Number" aria-label="Phone Number">
+                  <input class="input" type="email" name="email" placeholder="Email Address" aria-label="Email Address" required>
+                  <input class="input" type="text" name="subject" placeholder="Email Subject" aria-label="Email Subject">
                 </div>
-                <textarea class="input contact-message" placeholder="Your Message"></textarea>
+                <textarea class="input contact-message" name="message" placeholder="Your Message" aria-label="Your Message" required></textarea>
             </div>
             <button class="btn contact-submit" type="submit">Submit</button>
         </form>
     </main>
+    <script src="script.js"></script>
 </body>
 </html>

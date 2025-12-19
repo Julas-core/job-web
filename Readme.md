@@ -22,7 +22,9 @@ A modern job-hunting web UI built with **HTML**, **CSS**, and **Font Awesome**. 
 - `contact.html` — Contact form.
 - `login.html` — Login screen.
 - `register.html` — Seeker/Employer signup.
+- `job-details.html` — Sample job detail page linked from listings.
 - `style.css` — Global styles, layout, and responsive rules.
+- `script.js` — Mobile nav toggle and inline validation helper.
 - `assets/` — Images (hero background, students, etc.).
 
 ## Customization
