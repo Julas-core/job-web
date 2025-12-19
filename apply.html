@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Apply</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-wrap">
+  <header class="navbar">
+    <div class="brand">JobLaunch</div>
+    <div class="nav-links">
+      <a class="active" href="index.html">Home</a>
+      <a href="catagories.html">Categories</a>
+      <a href="about.html">AboutUs</a>
+      <a href="contact.html">ContactUs</a>
+    </div>
+    <div class="auth-links">
+      <a href="login.html">Login</a>
+      <span class="divider">|</span>
+      <a href="register.html">Register</a>
+    </div>
+  </header>
+
+  <section class="apply-section">
+    <form class="form-card apply-card">
+      <label class="subtle" style="text-align:left;">Please Enter Your Cover Letter</label>
+      <div class="apply-textarea">
+        <textarea placeholder="Cover Letter..."></textarea>
+      </div>
+
+      <div class="apply-row">
+        <input class="input" type="text" placeholder="Telegram Username (Optional)">
+      </div>
+
+      <div class="apply-row">
+        <label class="subtle">Please Enter Your Portfolio links</label>
+        <input class="input" type="url" placeholder="Portfolio Link 1">
+        <div class="apply-actions">
+          <button class="btn-ghost" type="button">Add Portfolio Link</button>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:10px;">
+        <button class="btn" type="submit">Submit</button>
+      </div>
+    </form>
+  </section>
+</body>
+</html>

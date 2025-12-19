@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Company Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-wrap">
+  <section class="dashboard-section container">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="avatar" style="background:#dcdcdc;"></div>
+        <h3>Company Name</h3>
+        <nav>
+          <a href="company-jobs.html">Total Job Posted</a>
+          <a href="company-applicants.html">Total Applicants</a>
+          <a class="active" href="company-profile.html">Post New Job</a>
+          <a href="company-manage.html">Manage Jobs</a>
+          <a href="company-settings.html">Setting</a>
+          <a href="company-more.html">More</a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-main">
+        <div style="display:flex;justify-content:flex-end;gap:18px;flex-wrap:wrap;">
+          <a href="#">Sign Out</a>
+          <a href="catagories.cata.html">Job Listings</a>
+        </div>
+
+        <form class="company-form" style="margin-top:20px;">
+          <input class="input" type="text" placeholder="Responsibility">
+          <textarea class="input" style="grid-column:2/-1;min-height:180px;" placeholder="Full Job Description"></textarea>
+          <input class="input" type="text" placeholder="Location">
+          <input class="input" type="text" placeholder="Job Type">
+          <input class="input full" type="text" placeholder="Requirement">
+          <input class="input full" type="text" placeholder="Salary (Optional)">
+        </form>
+
+        <div style="margin-top:20px; text-align:right;">
+          <button class="btn" type="button">Save Job</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

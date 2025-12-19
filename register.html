@@ -1,11 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Register</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Page-specific styling aligned to signup mocks */
+    .register-hero-wrap{min-height:calc(100vh - 140px);display:grid;grid-template-columns:1.05fr 0.95fr;gap:28px;align-items:center;padding:60px 0 50px;}
+    .register-info{background:linear-gradient(145deg,#134d62,#0c1f3b);border-radius:22px;padding:36px 30px;box-shadow:0 26px 48px rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.06);color:#dff8f6;}
+    .register-info h1{margin:0 0 12px;font-size:2.5rem;font-family:'Sora',sans-serif;}
+    .register-info .subtle{display:block;font-size:1.05rem;color:rgba(223,248,246,0.82);max-width:520px;margin-bottom:18px;}
+    .register-pills{display:flex;gap:12px;flex-wrap:wrap;}
+    .register-pill{padding:10px 14px;border-radius:12px;background:rgba(0,199,199,0.14);color:#dff8f6;font-weight:800;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(0,199,199,0.22);}
+
+    .register-card{background:transparent;border-radius:20px;padding:24px 0;box-shadow:none;border:1px solid rgba(255,255,255,0.08);width:100%;}
+    .register-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+    .register-tab{background:transparent;border:2px solid rgba(0,199,199,0.6);color:var(--text);border-radius:12px;padding:12px;font-weight:800;cursor:pointer;transition:all .12s ease;}
+    .register-tab.active{background:linear-gradient(120deg,#00c7c7,#7c1fd2);color:#041;box-shadow:0 14px 30px rgba(0,0,0,0.6);}
+    .register-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:6px;}
+    .register-form .full{grid-column:1/-1;}
+    .register-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:12px;}
+    .register-note{font-size:0.95rem;color:rgba(255,255,255,0.75);margin-top:10px;}
+    @media (max-width:960px){.register-hero-wrap{grid-template-columns:1fr;padding:36px 0;}.register-info{order:1;}.register-card{order:2;}}
+  </style>
 </head>
-<body>
-    
+<body class="page-wrap">
+  <header class="navbar">
+    <div class="brand">JobLaunch</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="catagories.html">Categories</a>
+      <a href="about.html">AboutUs</a>
+      <a href="contact.html">ContactUs</a>
+    </div>
+    <div class="auth-links">
+      <a href="login.html">Login</a>
+      <span class="divider">|</span>
+      <a class="active" href="register.html">Register</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="register-hero-wrap">
+      <!-- <div class="register-info">
+        <h1>Create your JobLaunch account</h1>
+        <span class="subtle">Switch between seeker and employer to get tailored questions that match the original signup mock.</span>
+        <div class="register-pills">
+          <span class="register-pill"><i class="fa-solid fa-bolt"></i> Fast onboarding</span>
+          <span class="register-pill"><i class="fa-solid fa-shield-halved"></i> Secure</span>
+          <span class="register-pill"><i class="fa-solid fa-sparkles"></i> Curated matches</span>
+        </div>
+      </div> -->
+
+      <div class="register-card">
+        <div class="register-tabs">
+          <button class="register-tab active" data-target="seeker">Seeker Signup</button>
+          <button class="register-tab" data-target="employer">Employer Signup</button>
+        </div>
+
+        <form class="register-form" id="seeker" data-pane>
+          <input class="input" type="text" placeholder="Full Name" required>
+          <input class="input" type="email" placeholder="Email" required>
+          <input class="input" type="text" placeholder="Professional Title" required>
+          <select class="input">
+            <option selected>Skill Level</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Expert</option>
+          </select>
+          <input class="input" type="password" placeholder="Password" required>
+          <input class="input" type="password" placeholder="Confirm Password" required>
+          <input class="input" type="text" placeholder="City">
+          <input class="input" type="text" placeholder="Primary Interest (e.g., Frontend)">
+          <textarea class="input full" style="min-height:110px;" placeholder="Short bio or portfolio links"></textarea>
+          <div class="register-actions full">
+            <button class="btn btn-ghost" type="button">Reset</button>
+            <button class="btn" type="submit">Create Account</button>
+          </div>
+          <div class="register-note full">Already have an account? <a href="login.html" style="color:var(--accent-teal);font-weight:700;">Sign in</a></div>
+        </form>
+
+        <form class="register-form" id="employer" data-pane style="display:none;">
+          <input class="input" type="text" placeholder="Company Name" required>
+          <input class="input" type="text" placeholder="Contact Name" required>
+          <input class="input" type="email" placeholder="Work Email" required>
+          <input class="input" type="text" placeholder="Role (e.g., HR Manager)" required>
+          <input class="input" type="password" placeholder="Password" required>
+          <input class="input" type="password" placeholder="Confirm Password" required>
+          <select class="input">
+            <option selected>Company Size</option>
+            <option>1-10</option>
+            <option>11-50</option>
+            <option>51-200</option>
+            <option>200+</option>
+          </select>
+          <div class="full" style="display:flex;flex-direction:column;gap:8px;">
+            <label class="subtle">Representative</label>
+            <div style="display:flex;gap:18px;color:var(--text);flex-wrap:wrap;">
+              <label><input type="radio" name="rep" checked> General manager</label>
+              <label><input type="radio" name="rep"> Representative</label>
+            </div>
+          </div>
+          <div class="full" style="display:flex;flex-direction:column;gap:6px;">
+            <label class="subtle">Trade License</label>
+            <input class="input" type="file" aria-label="Trade License">
+          </div>
+          <div class="full" style="display:flex;flex-direction:column;gap:6px;">
+            <label class="subtle">ID Proof</label>
+            <input class="input" type="file" aria-label="ID Proof">
+          </div>
+          <input class="input" type="text" placeholder="Country">
+          <input class="input" type="text" placeholder="City">
+          <div class="register-actions full">
+            <button class="btn btn-ghost" type="button">Reset</button>
+            <button class="btn" type="submit">Create Employer</button>
+          </div>
+          <div class="register-note full">Need help setting up? <a href="contact.html" style="color:var(--accent-teal);font-weight:700;">Talk to us</a></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Simple tab toggle to mirror the signup mock behavior
+    const tabs = document.querySelectorAll('.register-tab');
+    const panes = document.querySelectorAll('[data-pane]');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+        panes.forEach(p => { p.style.display = p.id === target ? 'grid' : 'none'; });
+      });
+    });
+  </script>
 </body>
 </html>

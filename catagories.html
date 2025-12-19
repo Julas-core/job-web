@@ -3,26 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobLaunch - Catagories Page</title>
+    <title>JobLaunch | Categories</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-        <div class="navcontainer">
-        <nav>
-            <ul class="navlist-logo">
-                <img src="#" alt="logo">
-            </ul>
-            <ul class="navlist-Center">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="catagories.html">Categories</a></li>
-                <li><a href="about.html">AboutUs</a></li>
-                <li><a href="contact.html">ContactUs</a></li>
-            </ul>
-            <ul class="navlist-left">
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
-        </nav>
-    </div>
+<body class="page-wrap">
+    <header class="navbar">
+        <div class="brand">JobLaunch</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a class="active" href="catagories.html">Categories</a>
+            <a href="about.html">AboutUs</a>
+            <a href="contact.html">ContactUs</a>
+        </div>
+        <div class="auth-links">
+            <a href="login.html">Login</a>
+            <span class="divider">|</span>
+            <a href="register.html">Register</a>
+        </div>
+    </header>
+
+    <main class="container category-section">
+        <h1 class="section-title">Category</h1>
+        <div class="category-grid">
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-laptop-code category-icon"></i>
+                <h3>Website Development</h3>
+                        <small>Frontend, backend, and full-stack roles building modern web experiences.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-handshake-simple category-icon" style="color:#f44336"></i>
+                <h3>Business Management</h3>
+                        <small>Leadership, operations, and strategic roles that scale teams and revenue.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-taxi category-icon" style="color:#f44336"></i>
+                <h3>Driver</h3>
+                        <small>Logistics, delivery, and transport positions with flexible schedules.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-gavel category-icon" style="color:#f44336"></i>
+                <h3>Legal</h3>
+                        <small>Paralegals, compliance leads, and legal counsel for growing companies.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-heart-pulse category-icon" style="color:#f44336"></i>
+                <h3>Health</h3>
+                        <small>Clinical care, telehealth, and wellness roles centered on patient impact.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-chart-line category-icon" style="color:#00c7c7"></i>
+                <h3>Market Data Analyzing</h3>
+                        <small>Data, BI, and research roles that turn signals into business decisions.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-microchip category-icon" style="color:#00c7c7"></i>
+                <h3>Engineering</h3>
+                        <small>Hardware, firmware, and systems engineering across devices and infrastructure.</small>
+            </div>
+            <div class="category-card" onclick="location.href='catagories.cata.html'">
+                <i class="fa-solid fa-book category-icon" style="color:#f44336"></i>
+                <h3>Education</h3>
+                        <small>Teaching, curriculum design, and learning roles for every level.</small>
+            </div>
+                    <div class="category-card" onclick="location.href='catagories.cata.html'">
+                        <i class="fa-solid fa-wand-magic-sparkles category-icon" style="color:#00c7c7"></i>
+                        <h3>Product & UX</h3>
+                        <small>Product managers, UX writers, and designers shaping intuitive journeys.</small>
+                    </div>
+                    <div class="category-card" onclick="location.href='catagories.cata.html'">
+                        <i class="fa-solid fa-cloud-bolt category-icon" style="color:#7c1fd2"></i>
+                        <h3>Cloud & DevOps</h3>
+                        <small>Site reliability, platform engineering, and automation for resilient systems.</small>
+                    </div>
+                    <div class="category-card" onclick="location.href='catagories.cata.html'">
+                        <i class="fa-solid fa-bullhorn category-icon" style="color:#f44336"></i>
+                        <h3>Marketing & Growth</h3>
+                        <small>Content, lifecycle, and performance roles that fuel brand momentum.</small>
+                    </div>
+                    <div class="category-card" onclick="location.href='catagories.cata.html'">
+                        <i class="fa-solid fa-shield-halved category-icon" style="color:#00c7c7"></i>
+                        <h3>Cybersecurity</h3>
+                        <small>Security engineers, analysts, and compliance leads protecting assets.</small>
+                    </div>
+        </div>
+    </main>
 </body>
 </html>

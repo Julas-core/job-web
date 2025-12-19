@@ -3,39 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobLaunch | Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <title>JobLauch | Home-Page</title>
 </head>
-<body onload="window.alert('The Page has loaded successfully')">
-        <div class="navcontainer">
-        <nav>
-            <ul class="navlist-logo">
-                <img src="#" alt="logo">
-            </ul>
-            <ul class="navlist-Center">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">AboutUs</a></li>
-                <li><a href="contact.html">ContactUs</a></li>
-            </ul>
-            <ul class="navlist-left">
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
-        </nav>
-    </div>
-    <div class="maincontainer">
-        <section class="maincontainer-left">
-            <h1>Apply <span>Here,</span> <br> Find Your Future Job!</h1>
-            <div class="cta">
-            <input type="search" class="jobsearch" name="jobsearch" id="jobsearch" placeholder="Search for jobs...">
-            <button>Find Job</button>
+<body class="page-wrap">
+    <header class="navbar">
+        <div class="brand">JobLaunch</div>
+        <div class="nav-links">
+            <a class="active" href="index.html">Home</a>
+            <a href="catagories.html">Categories</a>
+            <a href="about.html">AboutUs</a>
+            <a href="contact.html">ContactUs</a>
+        </div>
+        <div class="auth-links">
+            <a href="login.html">Login</a>
+            <span class="divider">|</span>
+            <a href="register.html">Register</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Apply <span class="accent-purple">Here</span>,<br>Find Your Future Job!</h1>
+            <p class="hero-copy">Search thousands of roles, connect with top companies, and take the next step in your career.</p>
+            <div class="search-row">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input class="search-input" type="text" placeholder="Job Title">
+                </div>
+                <button class="btn hero-btn">Find Job</button>
             </div>
         </section>
-        <input type="text" >
-        <section class="maincontainer-right">
-            <img src="./assets/image.png" alt="main image">
-        </section>
-    </div>
-
+    </main>
 </body>
 </html>

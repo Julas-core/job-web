@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Manage Jobs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-wrap">
+  <section class="dashboard-section container">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="avatar" style="background:#dcdcdc;"></div>
+        <h3>Company Name</h3>
+        <nav>
+          <a href="company-jobs.html">Total Job Posted</a>
+          <a href="company-applicants.html">Total Applicants</a>
+          <a href="company-profile.html">Post New Job</a>
+          <a class="active" href="company-manage.html">Manage Jobs</a>
+          <a href="company-settings.html">Setting</a>
+          <a href="company-more.html">More</a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-main">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 style="margin:0;">Manage Jobs</h1>
+            <p class="subtle" style="margin:6px 0 0;">Edit postings, pause roles, and refresh visibility.</p>
+          </div>
+          <a class="btn" href="company-profile.html">Create Job</a>
+        </div>
+
+        <div class="profile-jobs">
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Marketing Lead</div>
+                <div class="job-location"><i class="fa-solid fa-location-dot"></i> Hybrid</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(0,209,45,0.18);color:var(--accent-green);font-weight:800;">Active</span>
+            </div>
+            <div class="job-role">Team: Growth</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Updated 2 days ago</span>
+              <span><i class="fa-solid fa-user"></i> 24 applicants</span>
+            </div>
+            <div class="job-footer" style="gap:10px;flex-wrap:wrap;">
+              <button class="job-apply" type="button">Edit</button>
+              <button class="btn btn-ghost" type="button" style="min-width:120px;">Pause</button>
+              <button class="btn" type="button" style="min-width:120px;">Boost</button>
+            </div>
+          </article>
+
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Customer Success Manager</div>
+                <div class="job-location"><i class="fa-solid fa-location-dot"></i> Remote</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(124,31,210,0.16);color:var(--accent-purple);font-weight:800;">Interviewing</span>
+            </div>
+            <div class="job-role">Team: Success</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Updated 5 days ago</span>
+              <span><i class="fa-solid fa-user"></i> 31 applicants</span>
+            </div>
+            <div class="job-footer" style="gap:10px;flex-wrap:wrap;">
+              <button class="job-apply" type="button">Edit</button>
+              <button class="btn btn-ghost" type="button" style="min-width:120px;">Close</button>
+              <button class="btn" type="button" style="min-width:120px;">View Pipeline</button>
+            </div>
+          </article>
+
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Operations Coordinator</div>
+                <div class="job-location"><i class="fa-solid fa-location-dot"></i> On-site</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(244,67,54,0.14);color:var(--accent-red);font-weight:800;">Closed</span>
+            </div>
+            <div class="job-role">Team: Operations</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Closed 1 week ago</span>
+              <span><i class="fa-solid fa-user"></i> 15 applicants</span>
+            </div>
+            <div class="job-footer" style="gap:10px;flex-wrap:wrap;">
+              <button class="job-apply" type="button">Duplicate</button>
+              <button class="btn btn-ghost" type="button" style="min-width:120px;">Archive</button>
+              <button class="btn" type="button" style="min-width:120px;">View Report</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

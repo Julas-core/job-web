@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Applicants</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-wrap">
+  <section class="dashboard-section container">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="avatar" style="background:#dcdcdc;"></div>
+        <h3>Company Name</h3>
+        <nav>
+          <a href="company-jobs.html">Total Job Posted</a>
+          <a class="active" href="company-applicants.html">Total Applicants</a>
+          <a href="company-profile.html">Post New Job</a>
+          <a href="company-manage.html">Manage Jobs</a>
+          <a href="company-settings.html">Setting</a>
+          <a href="company-more.html">More</a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-main">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 style="margin:0;">Applicants</h1>
+            <p class="subtle" style="margin:6px 0 0;">Filter, review, and track everyone in your pipeline.</p>
+          </div>
+          <a class="btn" href="company-profile.html">Post New Job</a>
+        </div>
+
+        <div class="job-card" style="background:var(--card);">
+          <div class="job-header" style="margin-bottom:8px;">
+            <div>
+              <div class="job-company">Quick filters</div>
+              <div class="job-location"><i class="fa-solid fa-filter"></i> Narrow your view</div>
+            </div>
+          </div>
+          <div class="job-meta" style="gap:10px;flex-wrap:wrap;">
+            <span style="padding:8px 12px;border-radius:12px;background:rgba(0,199,199,0.18);color:var(--accent-teal);font-weight:800;">All roles</span>
+            <span style="padding:8px 12px;border-radius:12px;background:rgba(0,209,45,0.18);color:var(--accent-green);font-weight:800;">Shortlisted</span>
+            <span style="padding:8px 12px;border-radius:12px;background:rgba(124,31,210,0.16);color:var(--accent-purple);font-weight:800;">Interviewing</span>
+            <span style="padding:8px 12px;border-radius:12px;background:rgba(244,67,54,0.14);color:var(--accent-red);font-weight:800;">Declined</span>
+          </div>
+        </div>
+
+        <div class="profile-jobs" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Sami Tesfay</div>
+                <div class="job-location"><i class="fa-solid fa-envelope"></i> sami@example.com</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(0,209,45,0.18);color:var(--accent-green);font-weight:800;">Shortlisted</span>
+            </div>
+            <div class="job-role">Role: Senior Web Developer</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Applied 3 days ago</span>
+              <span><i class="fa-solid fa-phone"></i> +251 900 000 000</span>
+            </div>
+            <div class="job-desc">Great portfolio and strong React background. Ready for technical interview.</div>
+            <div class="job-footer">
+              <div class="job-salary">Score: 87/100</div>
+              <button class="job-apply" type="button">View</button>
+            </div>
+          </article>
+
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Mimi Abebe</div>
+                <div class="job-location"><i class="fa-solid fa-envelope"></i> mimi@example.com</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(124,31,210,0.16);color:var(--accent-purple);font-weight:800;">Interviewing</span>
+            </div>
+            <div class="job-role">Role: Product Designer</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Applied 2 weeks ago</span>
+              <span><i class="fa-solid fa-phone"></i> +251 911 111 111</span>
+            </div>
+            <div class="job-desc">Strong UX case studies. Portfolio review scheduled Friday.</div>
+            <div class="job-footer">
+              <div class="job-salary">Score: 82/100</div>
+              <button class="job-apply" type="button">View</button>
+            </div>
+          </article>
+
+          <article class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-company">Ruth Solomon</div>
+                <div class="job-location"><i class="fa-solid fa-envelope"></i> ruth@example.com</div>
+              </div>
+              <span style="padding:6px 10px;border-radius:8px;background:rgba(244,67,54,0.14);color:var(--accent-red);font-weight:800;">Declined</span>
+            </div>
+            <div class="job-role">Role: Data Analyst</div>
+            <div class="job-meta">
+              <span><i class="fa-solid fa-calendar"></i> Applied 1 month ago</span>
+              <span><i class="fa-solid fa-phone"></i> +251 922 222 222</span>
+            </div>
+            <div class="job-desc">Good SQL background but role was closed. Consider for future openings.</div>
+            <div class="job-footer">
+              <div class="job-salary">Score: 74/100</div>
+              <button class="job-apply" type="button">Archive</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

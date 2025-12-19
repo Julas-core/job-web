@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Company Settings</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-wrap">
+  <section class="dashboard-section container">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="avatar" style="background:#dcdcdc;"></div>
+        <h3>Company Name</h3>
+        <nav>
+          <a href="company-jobs.html">Total Job Posted</a>
+          <a href="company-applicants.html">Total Applicants</a>
+          <a href="company-profile.html">Post New Job</a>
+          <a href="company-manage.html">Manage Jobs</a>
+          <a class="active" href="company-settings.html">Setting</a>
+          <a href="company-more.html">More</a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-main">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 style="margin:0;">Settings</h1>
+            <p class="subtle" style="margin:6px 0 0;">Control company profile, teams, and notifications.</p>
+          </div>
+          <a class="btn" href="company-profile.html">Post New Job</a>
+        </div>
+
+        <div class="company-form" style="background:var(--card);padding:18px;border-radius:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+          <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="margin:0;">Company Profile</h2>
+            <span class="subtle">What candidates will see</span>
+          </div>
+          <input class="input" type="text" placeholder="Company Name">
+          <input class="input" type="text" placeholder="Website">
+          <input class="input" type="text" placeholder="Headquarters">
+          <textarea class="input" style="grid-column:1/-1;min-height:120px;" placeholder="About your company"></textarea>
+        </div>
+
+        <div class="company-form" style="background:var(--card);padding:18px;border-radius:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+          <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="margin:0;">Notifications</h2>
+            <span class="subtle">Who gets notified</span>
+          </div>
+          <label class="job-card" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:14px;gap:8px;">
+            <div class="job-header" style="margin:0;">
+              <span class="job-company">New applicants</span>
+              <input type="checkbox" checked>
+            </div>
+            <div class="job-desc">Email hiring managers when a new candidate applies.</div>
+          </label>
+          <label class="job-card" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:14px;gap:8px;">
+            <div class="job-header" style="margin:0;">
+              <span class="job-company">Interview reminders</span>
+              <input type="checkbox" checked>
+            </div>
+            <div class="job-desc">Send day-before reminders to interviewers.</div>
+          </label>
+          <label class="job-card" style="background:transparent;border:1px solid rgba(255,255,255,0.08);padding:14px;gap:8px;">
+            <div class="job-header" style="margin:0;">
+              <span class="job-company">Weekly reports</span>
+              <input type="checkbox">
+            </div>
+            <div class="job-desc">Pipeline summary every Monday.</div>
+          </label>
+        </div>
+
+        <div class="company-form" style="background:var(--card);padding:18px;border-radius:12px;">
+          <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="margin:0;">Team Access</h2>
+            <span class="subtle">Add or remove collaborators</span>
+          </div>
+          <input class="input" type="text" placeholder="Team member name">
+          <input class="input" type="email" placeholder="Email">
+          <select class="input">
+            <option>Role: Recruiter</option>
+            <option>Role: Hiring Manager</option>
+            <option>Role: Interviewer</option>
+            <option>Role: Admin</option>
+          </select>
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:12px;">
+            <button class="btn btn-ghost" type="button">Cancel</button>
+            <button class="btn" type="button">Invite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
