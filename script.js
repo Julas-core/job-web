@@ -1,14 +1,24 @@
 // Shared client-side helpers for JobLaunch
 (function(){
-  // Mobile navigation toggle
+  // Mobile navigation toggle -> slide-in drawer
   const navToggle = document.querySelector('.nav-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  const authLinks = document.querySelector('.auth-links');
-  if(navToggle && navLinks){
+  if(navToggle){
+    const closeNav = () => {
+      document.body.classList.remove('nav-open');
+      navToggle.setAttribute('aria-expanded','false');
+    };
+
     navToggle.addEventListener('click', ()=>{
-      const open = navLinks.classList.toggle('open');
-      if(authLinks){ authLinks.classList.toggle('open', open); }
+      const open = document.body.classList.toggle('nav-open');
       navToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){ closeNav(); }
+    });
+
+    document.querySelectorAll('.nav-links a, .auth-links a').forEach(link => {
+      link.addEventListener('click', closeNav);
     });
   }
 
