@@ -1,8 +1,9 @@
 // Shared client-side helpers for JobLaunch
 (function(){
-  // Mobile navigation toggle -> slide-in drawer
+  // Mobile navigation toggle for slide-in drawer
   const navToggle = document.querySelector('.nav-toggle');
   if(navToggle){
+    // Close helper for reuse (esc/link click)
     const closeNav = () => {
       document.body.classList.remove('nav-open');
       navToggle.setAttribute('aria-expanded','false');
@@ -13,10 +14,12 @@
       navToggle.setAttribute('aria-expanded', String(open));
     });
 
+    // Allow closing via Escape key
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape'){ closeNav(); }
     });
 
+    // Close drawer when any nav/auth link is clicked
     document.querySelectorAll('.nav-links a, .auth-links a').forEach(link => {
       link.addEventListener('click', closeNav);
     });
@@ -27,11 +30,13 @@
   forms.forEach(form => {
     form.setAttribute('novalidate', 'true');
 
+    // Remove existing errors before a new validation pass
     const clearErrors = () => {
       form.querySelectorAll('.error-text').forEach(node => node.remove());
       form.querySelectorAll('[aria-invalid="true"]').forEach(field => field.removeAttribute('aria-invalid'));
     };
 
+    // Validate on submit; flag invalid fields and show inline messages
     form.addEventListener('submit', (e) => {
       clearErrors();
       let firstInvalid = null;
@@ -51,6 +56,7 @@
       if(firstInvalid){ firstInvalid.focus(); }
     });
 
+    // Live-clear errors as fields become valid
     form.addEventListener('input', (e) => {
       const field = e.target;
       if(!(field instanceof HTMLElement)){ return; }
