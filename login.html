@@ -10,33 +10,39 @@
 <body class="page-wrap">
   <header class="navbar">
     <div class="brand">JobLaunch</div>
-    <div class="nav-links">
-      <a class="active" href="index.html">Home</a>
-      <a href="catagories.html">Categories</a>
-      <a href="about.html">AboutUs</a>
-      <a href="contact.html">ContactUs</a>
-    </div>
-    <div class="auth-links">
-      <a href="login.html">Login</a>
-      <span class="divider">|</span>
-      <a href="register.html">Register</a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+    <div class="nav-drawer">
+      <div class="auth-links">
+        <a href="login.html">Login</a>
+        <span class="divider">|</span>
+        <a href="register.html">Register</a>
+      </div>
+      <div class="nav-links">
+        <a class="active" href="index.html">Home</a>
+        <a href="catagories.html">Categories</a>
+        <a href="about.html">AboutUs</a>
+        <a href="contact.html">ContactUs</a>
+      </div>
     </div>
   </header>
 
   <section class="auth-section">
     <div class="form-card">
       <h1 class="form-title">What are you?</h1>
-      <div class="toggle-group">
-        <button class="toggle-btn active" type="button">Seeker</button>
-        <button class="toggle-btn" type="button">Employer</button>
-      </div>
+      <form class="login-form" data-validate data-login-form>
+        <div class="toggle-group" role="group" aria-label="Select role">
+          <button class="toggle-btn active" type="button">Seeker</button>
+          <button class="toggle-btn" type="button">Employer</button>
+        </div>
 
-      <input class="input" type="text" placeholder="Full Name">
-      <input class="input" type="password" placeholder="Password">
+        <input class="input" name="email" type="email" placeholder="Email" aria-label="Email" required>
+        <input class="input" name="password" type="password" placeholder="Password" aria-label="Password" required minlength="6">
 
-      <button class="btn btn-green" type="submit">Login</button>
-      <div class="auth-links-row">Create an account? <a href="register.html">Register</a></div>
+        <button class="btn btn-green" type="submit">Login</button>
+        <div class="auth-links-row">Create an account? <a href="register.html">Register</a></div>
+      </form>
     </div>
   </section>
+  <script src="script.js"></script>
 </body>
 </html>
