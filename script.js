@@ -1,5 +1,20 @@
-// Lightweight in-browser demo backend (localStorage)
-(function(){
+// Lightweight demo backend with optional Supabase; falls back to localStorage when Supabase config is not provided.
+(async function(){
+  const SUPABASE_URL = window.SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+  let supabase = null;
+
+  // Attempt to init Supabase client when creds are provided
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    try {
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (err) {
+      console.warn('Supabase not initialized, falling back to local demo:', err);
+      supabase = null;
+    }
+  }
+
   const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
 
   const seedJobs = [
@@ -80,9 +95,32 @@
     if(!localStorage.getItem(KEYS.apps)) save(KEYS.apps, []);
   };
 
-  const getCurrent = () => load(KEYS.current, null);
-  const setCurrent = (user) => save(KEYS.current, user);
-  const logout = () => localStorage.removeItem(KEYS.current);
+  const getCurrentLocal = () => load(KEYS.current, null);
+  const setCurrentLocal = (user) => save(KEYS.current, user);
+  const logoutLocal = () => localStorage.removeItem(KEYS.current);
+
+  // Current user (Supabase or local)
+  const getCurrent = async () => {
+    if (supabase) {
+      const { data } = await supabase.auth.getSession();
+      const user = data?.session?.user;
+      if (!user) return null;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role,name,company,title,city,bio')
+        .eq('id', user.id)
+        .single();
+      return { id: user.id, email: user.email, role: profile?.role, name: profile?.name, company: profile?.company };
+    }
+    return getCurrentLocal();
+  };
+
+  const logout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    logoutLocal();
+  };
 
   // Mobile navigation toggle for slide-in drawer
   const wireNav = () => {
@@ -142,10 +180,17 @@
   };
 
   // Render job listing grid
-  const renderJobList = () => {
+  const renderJobList = async () => {
     const grid = document.querySelector('[data-job-grid]');
     if(!grid) return;
-    const jobs = load(KEYS.jobs, []);
+    let jobs = [];
+    if (supabase) {
+      const { data, error } = await supabase.from('jobs').select('*').order('posted_at', { ascending:false });
+      if (error) { console.warn('jobs fetch error', error); }
+      jobs = data || [];
+    } else {
+      jobs = load(KEYS.jobs, []);
+    }
     grid.innerHTML = jobs.map(job => `
       <article class="job-card">
         <div class="job-header">
@@ -156,12 +201,12 @@
         </div>
         <div class="job-role">${job.title}</div>
         <div class="job-meta">
-          <span><i class="fa-solid fa-briefcase"></i> ${job.type}</span>
-          <span><i class="fa-regular fa-clock"></i> Posted ${job.posted}</span>
+          <span><i class="fa-solid fa-briefcase"></i> ${job.type || ''}</span>
+          <span><i class="fa-regular fa-clock"></i> Posted ${job.posted || job.posted_at || ''}</span>
         </div>
-        <div class="job-desc">${job.description}</div>
+        <div class="job-desc">${job.description || ''}</div>
         <div class="job-footer">
-          <div class="job-salary">${job.salary}</div>
+          <div class="job-salary">${job.salary || ''}</div>
           <a class="job-apply" href="apply.html?id=${job.id}" aria-label="Apply to ${job.title}">Apply</a>
         </div>
       </article>
@@ -169,11 +214,18 @@
   };
 
   // Populate job detail page
-  const renderJobDetail = () => {
+  const renderJobDetail = async () => {
     const wrap = document.querySelector('[data-job-detail]');
     if(!wrap) return;
     const jobId = getJobIdFromUrl();
-    const job = load(KEYS.jobs, []).find(j => j.id === jobId);
+    let job = null;
+    if (supabase) {
+      const { data, error } = await supabase.from('jobs').select('*').eq('id', jobId).single();
+      if (error) { console.warn('job fetch error', error); }
+      job = data;
+    } else {
+      job = load(KEYS.jobs, []).find(j => j.id === jobId);
+    }
     if(!job){ wrap.innerHTML = '<p class="subtle">Job not found.</p>'; return; }
     const applyLink = wrap.querySelector('[data-apply-link]');
     if(applyLink) applyLink.href = `apply.html?id=${job.id}`;
@@ -182,11 +234,13 @@
     wrap.querySelector('[data-job-location]').textContent = job.location;
     wrap.querySelector('[data-job-salary]').textContent = job.salary;
     wrap.querySelector('[data-job-type]').textContent = job.type;
-    wrap.querySelector('[data-job-category]').textContent = job.category;
-    wrap.querySelector('[data-job-posted]').textContent = job.posted;
-    wrap.querySelector('[data-job-desc]').textContent = job.description;
-    wrap.querySelector('[data-job-resp]').innerHTML = job.responsibilities.map(r => `<li>${r}</li>`).join('');
-    wrap.querySelector('[data-job-req]').innerHTML = job.requirements.map(r => `<li>${r}</li>`).join('');
+    wrap.querySelector('[data-job-category]').textContent = job.category || '';
+    wrap.querySelector('[data-job-posted]').textContent = job.posted || job.posted_at || '';
+    wrap.querySelector('[data-job-desc]').textContent = job.description || '';
+    const resp = job.responsibilities || [];
+    const reqs = job.requirements || [];
+    wrap.querySelector('[data-job-resp]').innerHTML = resp.map(r => `<li>${r}</li>`).join('');
+    wrap.querySelector('[data-job-req]').innerHTML = reqs.map(r => `<li>${r}</li>`).join('');
   };
 
   // Register forms (seeker/employer)
@@ -194,28 +248,44 @@
     document.querySelectorAll('[data-register-form]').forEach(form => {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const role = form.dataset.role;
-        const fd = new FormData(form);
-        const password = fd.get('password')?.toString() || '';
-        const confirm = fd.get('confirmPassword')?.toString() || '';
-        if(password !== confirm){ alert('Passwords must match.'); return; }
-        const email = (fd.get('email') || fd.get('workEmail') || '').toString().toLowerCase();
-        if(!email){ alert('Email is required.'); return; }
-        const users = load(KEYS.users, []);
-        if(users.some(u => u.email === email)){ alert('An account with this email already exists.'); return; }
-        const user = {
-          id:`u-${Date.now()}`,
-          role,
-          email,
-          password,
-          name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
-          company: role === 'Employer' ? (fd.get('company') || '') : ''
-        };
-        users.push(user);
-        save(KEYS.users, users);
-        setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-        alert('Account created. You are now signed in.');
-        window.location.href = 'index.html';
+        (async ()=>{
+          const role = form.dataset.role;
+          const fd = new FormData(form);
+          const password = fd.get('password')?.toString() || '';
+          const confirm = fd.get('confirmPassword')?.toString() || '';
+          if(password !== confirm){ alert('Passwords must match.'); return; }
+          const email = (fd.get('email') || fd.get('workEmail') || '').toString().toLowerCase();
+          if(!email){ alert('Email is required.'); return; }
+
+          if (supabase) {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) { alert(error.message); return; }
+            const userId = data?.user?.id;
+            if (userId) {
+              await supabase.from('profiles').upsert({ id:userId, role, name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User', company: role === 'Employer' ? (fd.get('company') || '') : '' });
+            }
+            alert('Account created. Check email if confirmation is required.');
+            window.location.href = 'index.html';
+            return;
+          }
+
+          // local fallback
+          const users = load(KEYS.users, []);
+          if(users.some(u => u.email === email)){ alert('An account with this email already exists.'); return; }
+          const user = {
+            id:`u-${Date.now()}`,
+            role,
+            email,
+            password,
+            name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
+            company: role === 'Employer' ? (fd.get('company') || '') : ''
+          };
+          users.push(user);
+          save(KEYS.users, users);
+          setCurrentLocal({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
+          alert('Account created. You are now signed in.');
+          window.location.href = 'index.html';
+        })();
       });
     });
   };
@@ -235,14 +305,28 @@
     });
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
-      const password = form.querySelector('input[name="password"]')?.value || '';
-      const users = load(KEYS.users, []);
-      const user = users.find(u => u.email === email && u.password === password && u.role === selectedRole);
-      if(!user){ alert('Invalid credentials or role.'); return; }
-      setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-      alert(`Welcome back, ${user.name || user.email}!`);
-      window.location.href = 'index.html';
+      (async ()=>{
+        const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
+        const password = form.querySelector('input[name="password"]')?.value || '';
+        if (supabase) {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) { alert(error.message); return; }
+          const user = data?.user;
+          if (!user) { alert('Invalid credentials.'); return; }
+          const { data: profile } = await supabase.from('profiles').select('role,name,company').eq('id', user.id).single();
+          if (profile?.role !== selectedRole) { alert('Role mismatch for this account.'); return; }
+          alert(`Welcome back, ${profile?.name || user.email}!`);
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const users = load(KEYS.users, []);
+        const user = users.find(u => u.email === email && u.password === password && u.role === selectedRole);
+        if(!user){ alert('Invalid credentials or role.'); return; }
+        setCurrentLocal({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
+        alert(`Welcome back, ${user.name || user.email}!`);
+        window.location.href = 'index.html';
+      })();
     });
   };
 
@@ -252,26 +336,48 @@
     if(!form) return;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const user = getCurrent();
-      if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
-      const jobId = getJobIdFromUrl();
-      if(!jobId){ alert('Missing job id.'); return; }
-      const apps = load(KEYS.apps, []);
-      if(apps.some(a => a.jobId === jobId && a.userId === user.id)){ alert('You already applied to this job.'); return; }
-      const fd = new FormData(form);
-      apps.push({
-        id:`app-${Date.now()}`,
-        jobId,
-        userId:user.id,
-        cover: fd.get('cover') || '',
-        telegram: fd.get('telegram') || '',
-        portfolio: fd.get('portfolio') || '',
-        createdAt:new Date().toISOString(),
-        status:'Pending'
-      });
-      save(KEYS.apps, apps);
-      alert('Application submitted!');
-      window.location.href = 'thank-you-apply.html';
+      (async ()=>{
+        const user = await getCurrent();
+        if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
+        const jobId = getJobIdFromUrl();
+        if(!jobId){ alert('Missing job id.'); return; }
+        const fd = new FormData(form);
+
+        if (supabase) {
+          const { error } = await supabase.from('applications').insert({
+            job_id: jobId,
+            seeker_id: user.id,
+            cover: fd.get('cover') || '',
+            telegram: fd.get('telegram') || '',
+            portfolio: fd.get('portfolio') || '',
+            status: 'Pending'
+          });
+          if (error) {
+            const dup = error.message && error.message.toLowerCase().includes('duplicate');
+            alert(dup ? 'You already applied to this job.' : error.message);
+            return;
+          }
+          alert('Application submitted!');
+          window.location.href = 'thank-you-apply.html';
+          return;
+        }
+
+        const apps = load(KEYS.apps, []);
+        if(apps.some(a => a.jobId === jobId && a.userId === user.id)){ alert('You already applied to this job.'); return; }
+        apps.push({
+          id:`app-${Date.now()}`,
+          jobId,
+          userId:user.id,
+          cover: fd.get('cover') || '',
+          telegram: fd.get('telegram') || '',
+          portfolio: fd.get('portfolio') || '',
+          createdAt:new Date().toISOString(),
+          status:'Pending'
+        });
+        save(KEYS.apps, apps);
+        alert('Application submitted!');
+        window.location.href = 'thank-you-apply.html';
+      })();
     });
   };
 
@@ -279,23 +385,25 @@
   const renderNavAuth = () => {
     const auth = document.querySelector('.auth-links');
     if(!auth) return;
-    const user = getCurrent();
-    if(!user) return;
-    const profileHref = user.role === 'Employer' ? 'company-profile.html' : 'user-profile.html';
-    auth.innerHTML = `
-      <a class="subtle" style="font-weight:700;" href="${profileHref}">${user.name || user.email} (${user.role})</a>
-      <button class="btn-ghost" style="padding:8px 12px;font-size:0.85rem;" type="button" data-logout>Logout</button>
-    `;
-    auth.querySelector('[data-logout]')?.addEventListener('click', ()=>{ logout(); window.location.reload(); });
+    (async ()=>{
+      const user = await getCurrent();
+      if(!user) return;
+      const profileHref = user.role === 'Employer' ? 'company-profile.html' : 'user-profile.html';
+      auth.innerHTML = `
+        <a class="subtle" style="font-weight:700;" href="${profileHref}">${user.name || user.email} (${user.role})</a>
+        <button class="btn-ghost" style="padding:8px 12px;font-size:0.85rem;" type="button" data-logout>Logout</button>
+      `;
+      auth.querySelector('[data-logout]')?.addEventListener('click', ()=>{ logout().then(()=>window.location.reload()); });
+    })();
   };
 
   // Bootstrap
-  ensureSeed();
+  if(!supabase) ensureSeed();
   wireNav();
   wireValidation();
   renderNavAuth();
-  renderJobList();
-  renderJobDetail();
+  await renderJobList();
+  await renderJobDetail();
   wireRegisterForms();
   wireLoginForm();
   wireApplyForm();
