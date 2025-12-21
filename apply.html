@@ -27,19 +27,19 @@
   </header>
 
   <section class="apply-section">
-    <form class="form-card apply-card" data-validate>
+    <form class="form-card apply-card" data-validate data-apply-form>
       <label class="subtle" style="text-align:left;">Please Enter Your Cover Letter</label>
       <div class="apply-textarea">
-        <textarea placeholder="Cover Letter..." aria-label="Cover Letter" required></textarea>
+        <textarea name="cover" placeholder="Cover Letter..." aria-label="Cover Letter" required></textarea>
       </div>
 
       <div class="apply-row">
-        <input class="input" type="text" placeholder="Telegram Username (Optional)" aria-label="Telegram Username (Optional)">
+        <input class="input" name="telegram" type="text" placeholder="Telegram Username (Optional)" aria-label="Telegram Username (Optional)">
       </div>
 
       <div class="apply-row">
         <label class="subtle">Please Enter Your Portfolio links</label>
-        <input class="input" type="url" placeholder="Portfolio Link 1" aria-label="Portfolio Link 1">
+        <input class="input" name="portfolio" type="url" placeholder="Portfolio Link 1" aria-label="Portfolio Link 1">
         <div class="apply-actions">
           <button class="btn-ghost" type="button">Add Portfolio Link</button>
         </div>

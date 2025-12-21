@@ -63,7 +63,7 @@
           <button class="register-tab" data-target="employer">Employer Signup</button>
         </div>
 
-        <form class="register-form" id="seeker" data-pane data-validate>
+        <form class="register-form" id="seeker" data-pane data-validate data-register-form data-role="Seeker">
           <input class="input" type="text" name="fullName" placeholder="Full Name" aria-label="Full Name" required>
           <input class="input" type="email" name="email" placeholder="Email" aria-label="Email" required>
           <input class="input" type="text" name="title" placeholder="Professional Title" aria-label="Professional Title" required>
@@ -85,7 +85,7 @@
           <div class="register-note full">Already have an account? <a href="login.html" style="color:var(--accent-teal);font-weight:700;">Sign in</a></div>
         </form>
 
-        <form class="register-form" id="employer" data-pane data-validate style="display:none;">
+        <form class="register-form" id="employer" data-pane data-validate data-register-form data-role="Employer" style="display:none;">
           <input class="input" type="text" name="company" placeholder="Company Name" aria-label="Company Name" required>
           <input class="input" type="text" name="contactName" placeholder="Contact Name" aria-label="Contact Name" required>
           <input class="input" type="email" name="workEmail" placeholder="Work Email" aria-label="Work Email" required>

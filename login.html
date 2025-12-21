@@ -29,13 +29,13 @@
   <section class="auth-section">
     <div class="form-card">
       <h1 class="form-title">What are you?</h1>
-      <form class="login-form" data-validate>
+      <form class="login-form" data-validate data-login-form>
         <div class="toggle-group" role="group" aria-label="Select role">
           <button class="toggle-btn active" type="button">Seeker</button>
           <button class="toggle-btn" type="button">Employer</button>
         </div>
 
-        <input class="input" name="fullName" type="text" placeholder="Full Name" aria-label="Full Name" required>
+        <input class="input" name="email" type="email" placeholder="Email" aria-label="Email" required>
         <input class="input" name="password" type="password" placeholder="Password" aria-label="Password" required minlength="6">
 
         <button class="btn btn-green" type="submit">Login</button>

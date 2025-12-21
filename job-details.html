@@ -31,44 +31,36 @@
       <i class="fa-solid fa-arrow-left"></i> Back to listings
     </a>
 
-    <section class="job-card" style="padding:22px 22px 18px; box-shadow:0 22px 34px rgba(0,0,0,0.5);">
+    <section class="job-card" data-job-detail style="padding:22px 22px 18px; box-shadow:0 22px 34px rgba(0,0,0,0.5);">
       <div class="job-header">
         <div>
-          <div class="job-company">Allena</div>
-          <div class="job-location"><i class="fa-solid fa-location-dot"></i> Mekelle</div>
+          <div class="job-company" data-job-company>Company</div>
+          <div class="job-location"><i class="fa-solid fa-location-dot"></i> <span data-job-location>Location</span></div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-          <span style="padding:6px 10px;border-radius:8px;background:rgba(0,199,199,0.15);color:var(--accent-teal);font-weight:800;">Posted 2 months ago</span>
-          <span class="job-salary">15,000 / Month</span>
+          <span style="padding:6px 10px;border-radius:8px;background:rgba(0,199,199,0.15);color:var(--accent-teal);font-weight:800;">Posted <span data-job-posted>--</span></span>
+          <span class="job-salary" data-job-salary>--</span>
         </div>
       </div>
-      <div class="job-role">Web Developer</div>
+      <div class="job-role" data-job-title>Job Title</div>
       <div class="job-meta" style="margin:8px 0 12px;">
-        <span><i class="fa-solid fa-briefcase"></i> Full Time</span>
-        <span><i class="fa-solid fa-layer-group"></i> Category: Engineering</span>
+        <span><i class="fa-solid fa-briefcase"></i> <span data-job-type>Type</span></span>
+        <span><i class="fa-solid fa-layer-group"></i> Category: <span data-job-category>Category</span></span>
       </div>
-      <p class="job-desc" style="min-height:auto;">Build and maintain responsive web applications, collaborate with designers and backend engineers, and ship performant user experiences for Allena's customer platform.</p>
+      <p class="job-desc" style="min-height:auto;" data-job-desc>Job description</p>
       <div style="display:grid;gap:12px;">
         <div>
           <strong>Responsibilities</strong>
-          <ul style="margin:8px 0 0 18px; color:var(--muted); line-height:1.4;">
-            <li>Develop and optimize frontend components using modern JavaScript frameworks.</li>
-            <li>Collaborate with backend teams to integrate APIs securely.</li>
-            <li>Write accessible, responsive UI that works across devices.</li>
-          </ul>
+          <ul style="margin:8px 0 0 18px; color:var(--muted); line-height:1.4;" data-job-resp></ul>
         </div>
         <div>
           <strong>Requirements</strong>
-          <ul style="margin:8px 0 0 18px; color:var(--muted); line-height:1.4;">
-            <li>2+ years building production web apps.</li>
-            <li>Proficiency in HTML, CSS, JavaScript; experience with RESTful APIs.</li>
-            <li>Familiarity with accessibility and performance best practices.</li>
-          </ul>
+          <ul style="margin:8px 0 0 18px; color:var(--muted); line-height:1.4;" data-job-req></ul>
         </div>
       </div>
       <div class="job-footer" style="margin-top:18px;">
         <div></div>
-        <a class="btn" href="apply.html">Apply Now</a>
+        <a class="btn" data-apply-link href="apply.html">Apply Now</a>
       </div>
     </section>
   </main>
