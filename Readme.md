@@ -48,5 +48,3 @@ A modern job-hunting web UI built with **HTML**, **CSS**, and **Font Awesome**. 
 - Buttons use shared `.btn`, `.btn-ghost`, `.btn-green` classes with hover shadows.
 - Inputs/textareas share consistent padding, borders, and focus outlines.
 
-## License
-Add your preferred license here (e.g., MIT).
