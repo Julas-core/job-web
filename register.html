@@ -29,16 +29,19 @@
 <body class="page-wrap">
   <header class="navbar">
     <div class="brand">JobLaunch</div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="catagories.html">Categories</a>
-      <a href="about.html">AboutUs</a>
-      <a href="contact.html">ContactUs</a>
-    </div>
-    <div class="auth-links">
-      <a href="login.html">Login</a>
-      <span class="divider">|</span>
-      <a class="active" href="register.html">Register</a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+    <div class="nav-drawer">
+      <div class="auth-links">
+        <a href="login.html">Login</a>
+        <span class="divider">|</span>
+        <a class="active" href="register.html">Register</a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="catagories.html">Categories</a>
+        <a href="about.html">AboutUs</a>
+        <a href="contact.html">ContactUs</a>
+      </div>
     </div>
   </header>
 
@@ -60,21 +63,21 @@
           <button class="register-tab" data-target="employer">Employer Signup</button>
         </div>
 
-        <form class="register-form" id="seeker" data-pane>
-          <input class="input" type="text" placeholder="Full Name" required>
-          <input class="input" type="email" placeholder="Email" required>
-          <input class="input" type="text" placeholder="Professional Title" required>
-          <select class="input">
+        <form class="register-form" id="seeker" data-pane data-validate data-register-form data-role="Seeker">
+          <input class="input" type="text" name="fullName" placeholder="Full Name" aria-label="Full Name" required>
+          <input class="input" type="email" name="email" placeholder="Email" aria-label="Email" required>
+          <input class="input" type="text" name="title" placeholder="Professional Title" aria-label="Professional Title" required>
+          <select class="input" name="skillLevel" aria-label="Skill Level" required>
             <option selected>Skill Level</option>
             <option>Beginner</option>
             <option>Intermediate</option>
             <option>Expert</option>
           </select>
-          <input class="input" type="password" placeholder="Password" required>
-          <input class="input" type="password" placeholder="Confirm Password" required>
-          <input class="input" type="text" placeholder="City">
-          <input class="input" type="text" placeholder="Primary Interest (e.g., Frontend)">
-          <textarea class="input full" style="min-height:110px;" placeholder="Short bio or portfolio links"></textarea>
+          <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
+          <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
+          <input class="input" type="text" name="city" placeholder="City" aria-label="City">
+          <input class="input" type="text" name="interest" placeholder="Primary Interest (e.g., Frontend)" aria-label="Primary Interest">
+          <textarea class="input full" name="bio" style="min-height:110px;" placeholder="Short bio or portfolio links" aria-label="Short bio or portfolio links"></textarea>
           <div class="register-actions full">
             <button class="btn btn-ghost" type="button">Reset</button>
             <button class="btn" type="submit">Create Account</button>
@@ -82,14 +85,14 @@
           <div class="register-note full">Already have an account? <a href="login.html" style="color:var(--accent-teal);font-weight:700;">Sign in</a></div>
         </form>
 
-        <form class="register-form" id="employer" data-pane style="display:none;">
-          <input class="input" type="text" placeholder="Company Name" required>
-          <input class="input" type="text" placeholder="Contact Name" required>
-          <input class="input" type="email" placeholder="Work Email" required>
-          <input class="input" type="text" placeholder="Role (e.g., HR Manager)" required>
-          <input class="input" type="password" placeholder="Password" required>
-          <input class="input" type="password" placeholder="Confirm Password" required>
-          <select class="input">
+        <form class="register-form" id="employer" data-pane data-validate data-register-form data-role="Employer" style="display:none;">
+          <input class="input" type="text" name="company" placeholder="Company Name" aria-label="Company Name" required>
+          <input class="input" type="text" name="contactName" placeholder="Contact Name" aria-label="Contact Name" required>
+          <input class="input" type="email" name="workEmail" placeholder="Work Email" aria-label="Work Email" required>
+          <input class="input" type="text" name="role" placeholder="Role (e.g., HR Manager)" aria-label="Role" required>
+          <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
+          <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
+          <select class="input" name="companySize" aria-label="Company Size" required>
             <option selected>Company Size</option>
             <option>1-10</option>
             <option>11-50</option>
@@ -105,14 +108,14 @@
           </div>
           <div class="full" style="display:flex;flex-direction:column;gap:6px;">
             <label class="subtle">Trade License</label>
-            <input class="input" type="file" aria-label="Trade License">
+              <input class="input" type="file" aria-label="Trade License">
           </div>
           <div class="full" style="display:flex;flex-direction:column;gap:6px;">
             <label class="subtle">ID Proof</label>
-            <input class="input" type="file" aria-label="ID Proof">
+              <input class="input" type="file" aria-label="ID Proof">
           </div>
-          <input class="input" type="text" placeholder="Country">
-          <input class="input" type="text" placeholder="City">
+          <input class="input" type="text" name="country" placeholder="Country" aria-label="Country">
+          <input class="input" type="text" name="city" placeholder="City" aria-label="City">
           <div class="register-actions full">
             <button class="btn btn-ghost" type="button">Reset</button>
             <button class="btn" type="submit">Create Employer</button>
@@ -136,5 +139,6 @@
       });
     });
   </script>
+  <script src="script.js"></script>
 </body>
 </html>
