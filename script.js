@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Lightweight demo backend with optional Supabase; falls back to localStorage when Supabase config is not provided.
 (async function(){
   const SUPABASE_URL = window.SUPABASE_URL || '';
@@ -17,6 +18,11 @@
 
   const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
     const OAUTH_ROLE_KEY = 'jl_oauth_role';
+=======
+// Lightweight in-browser demo backend (localStorage)
+(function(){
+  const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
 
   const seedJobs = [
     {
@@ -96,6 +102,7 @@
     if(!localStorage.getItem(KEYS.apps)) save(KEYS.apps, []);
   };
 
+<<<<<<< HEAD
   const getCurrentLocal = () => load(KEYS.current, null);
   const setCurrentLocal = (user) => save(KEYS.current, user);
   const logoutLocal = () => localStorage.removeItem(KEYS.current);
@@ -132,6 +139,11 @@
     }
     logoutLocal();
   };
+=======
+  const getCurrent = () => load(KEYS.current, null);
+  const setCurrent = (user) => save(KEYS.current, user);
+  const logout = () => localStorage.removeItem(KEYS.current);
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
 
   // Mobile navigation toggle for slide-in drawer
   const wireNav = () => {
@@ -191,6 +203,7 @@
   };
 
   // Render job listing grid
+<<<<<<< HEAD
   const renderJobList = async () => {
     const grid = document.querySelector('[data-job-grid]');
     if(!grid) return;
@@ -202,6 +215,12 @@
     } else {
       jobs = load(KEYS.jobs, []);
     }
+=======
+  const renderJobList = () => {
+    const grid = document.querySelector('[data-job-grid]');
+    if(!grid) return;
+    const jobs = load(KEYS.jobs, []);
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     grid.innerHTML = jobs.map(job => `
       <article class="job-card">
         <div class="job-header">
@@ -212,12 +231,21 @@
         </div>
         <div class="job-role">${job.title}</div>
         <div class="job-meta">
+<<<<<<< HEAD
           <span><i class="fa-solid fa-briefcase"></i> ${job.type || ''}</span>
           <span><i class="fa-regular fa-clock"></i> Posted ${job.posted || job.posted_at || ''}</span>
         </div>
         <div class="job-desc">${job.description || ''}</div>
         <div class="job-footer">
           <div class="job-salary">${job.salary || ''}</div>
+=======
+          <span><i class="fa-solid fa-briefcase"></i> ${job.type}</span>
+          <span><i class="fa-regular fa-clock"></i> Posted ${job.posted}</span>
+        </div>
+        <div class="job-desc">${job.description}</div>
+        <div class="job-footer">
+          <div class="job-salary">${job.salary}</div>
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
           <a class="job-apply" href="apply.html?id=${job.id}" aria-label="Apply to ${job.title}">Apply</a>
         </div>
       </article>
@@ -225,6 +253,7 @@
   };
 
   // Populate job detail page
+<<<<<<< HEAD
   const renderJobDetail = async () => {
     const wrap = document.querySelector('[data-job-detail]');
     if(!wrap) return;
@@ -237,6 +266,13 @@
     } else {
       job = load(KEYS.jobs, []).find(j => j.id === jobId);
     }
+=======
+  const renderJobDetail = () => {
+    const wrap = document.querySelector('[data-job-detail]');
+    if(!wrap) return;
+    const jobId = getJobIdFromUrl();
+    const job = load(KEYS.jobs, []).find(j => j.id === jobId);
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     if(!job){ wrap.innerHTML = '<p class="subtle">Job not found.</p>'; return; }
     const applyLink = wrap.querySelector('[data-apply-link]');
     if(applyLink) applyLink.href = `apply.html?id=${job.id}`;
@@ -245,6 +281,7 @@
     wrap.querySelector('[data-job-location]').textContent = job.location;
     wrap.querySelector('[data-job-salary]').textContent = job.salary;
     wrap.querySelector('[data-job-type]').textContent = job.type;
+<<<<<<< HEAD
     wrap.querySelector('[data-job-category]').textContent = job.category || '';
     wrap.querySelector('[data-job-posted]').textContent = job.posted || job.posted_at || '';
     wrap.querySelector('[data-job-desc]').textContent = job.description || '';
@@ -252,6 +289,13 @@
     const reqs = job.requirements || [];
     wrap.querySelector('[data-job-resp]').innerHTML = resp.map(r => `<li>${r}</li>`).join('');
     wrap.querySelector('[data-job-req]').innerHTML = reqs.map(r => `<li>${r}</li>`).join('');
+=======
+    wrap.querySelector('[data-job-category]').textContent = job.category;
+    wrap.querySelector('[data-job-posted]').textContent = job.posted;
+    wrap.querySelector('[data-job-desc]').textContent = job.description;
+    wrap.querySelector('[data-job-resp]').innerHTML = job.responsibilities.map(r => `<li>${r}</li>`).join('');
+    wrap.querySelector('[data-job-req]').innerHTML = job.requirements.map(r => `<li>${r}</li>`).join('');
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
   };
 
   // Register forms (seeker/employer)
@@ -259,6 +303,7 @@
     document.querySelectorAll('[data-register-form]').forEach(form => {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+<<<<<<< HEAD
         (async ()=>{
           const role = form.dataset.role;
           const fd = new FormData(form);
@@ -297,6 +342,30 @@
           alert('Account created. You are now signed in.');
           window.location.href = 'index.html';
         })();
+=======
+        const role = form.dataset.role;
+        const fd = new FormData(form);
+        const password = fd.get('password')?.toString() || '';
+        const confirm = fd.get('confirmPassword')?.toString() || '';
+        if(password !== confirm){ alert('Passwords must match.'); return; }
+        const email = (fd.get('email') || fd.get('workEmail') || '').toString().toLowerCase();
+        if(!email){ alert('Email is required.'); return; }
+        const users = load(KEYS.users, []);
+        if(users.some(u => u.email === email)){ alert('An account with this email already exists.'); return; }
+        const user = {
+          id:`u-${Date.now()}`,
+          role,
+          email,
+          password,
+          name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
+          company: role === 'Employer' ? (fd.get('company') || '') : ''
+        };
+        users.push(user);
+        save(KEYS.users, users);
+        setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
+        alert('Account created. You are now signed in.');
+        window.location.href = 'index.html';
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
       });
     });
   };
@@ -307,12 +376,16 @@
     if(!form) return;
     let selectedRole = 'Seeker';
     const roleButtons = form.querySelectorAll('.toggle-btn');
+<<<<<<< HEAD
       const googleBtn = form.querySelector('[data-google-auth]');
+=======
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     roleButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         roleButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedRole = btn.textContent.trim();
+<<<<<<< HEAD
           if (googleBtn) googleBtn.dataset.role = selectedRole;
       });
     });
@@ -359,6 +432,20 @@
         alert(`Welcome back, ${user.name || user.email}!`);
         window.location.href = 'index.html';
       })();
+=======
+      });
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
+      const password = form.querySelector('input[name="password"]')?.value || '';
+      const users = load(KEYS.users, []);
+      const user = users.find(u => u.email === email && u.password === password && u.role === selectedRole);
+      if(!user){ alert('Invalid credentials or role.'); return; }
+      setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
+      alert(`Welcome back, ${user.name || user.email}!`);
+      window.location.href = 'index.html';
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     });
   };
 
@@ -368,6 +455,7 @@
     if(!form) return;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+<<<<<<< HEAD
       (async ()=>{
         const user = await getCurrent();
         if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
@@ -410,6 +498,28 @@
         alert('Application submitted!');
         window.location.href = 'thank-you-apply.html';
       })();
+=======
+      const user = getCurrent();
+      if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
+      const jobId = getJobIdFromUrl();
+      if(!jobId){ alert('Missing job id.'); return; }
+      const apps = load(KEYS.apps, []);
+      if(apps.some(a => a.jobId === jobId && a.userId === user.id)){ alert('You already applied to this job.'); return; }
+      const fd = new FormData(form);
+      apps.push({
+        id:`app-${Date.now()}`,
+        jobId,
+        userId:user.id,
+        cover: fd.get('cover') || '',
+        telegram: fd.get('telegram') || '',
+        portfolio: fd.get('portfolio') || '',
+        createdAt:new Date().toISOString(),
+        status:'Pending'
+      });
+      save(KEYS.apps, apps);
+      alert('Application submitted!');
+      window.location.href = 'thank-you-apply.html';
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     });
   };
 
@@ -417,6 +527,7 @@
   const renderNavAuth = () => {
     const auth = document.querySelector('.auth-links');
     if(!auth) return;
+<<<<<<< HEAD
     (async ()=>{
       const user = await getCurrent();
       if(!user) return;
@@ -450,4 +561,26 @@
   wireLoginForm();
   wireApplyForm();
     wireGoogleAuthButtons();
+=======
+    const user = getCurrent();
+    if(!user) return;
+    const profileHref = user.role === 'Employer' ? 'company-profile.html' : 'user-profile.html';
+    auth.innerHTML = `
+      <a class="subtle" style="font-weight:700;" href="${profileHref}">${user.name || user.email} (${user.role})</a>
+      <button class="btn-ghost" style="padding:8px 12px;font-size:0.85rem;" type="button" data-logout>Logout</button>
+    `;
+    auth.querySelector('[data-logout]')?.addEventListener('click', ()=>{ logout(); window.location.reload(); });
+  };
+
+  // Bootstrap
+  ensureSeed();
+  wireNav();
+  wireValidation();
+  renderNavAuth();
+  renderJobList();
+  renderJobDetail();
+  wireRegisterForms();
+  wireLoginForm();
+  wireApplyForm();
+>>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
 })();
