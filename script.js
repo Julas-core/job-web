@@ -16,6 +16,7 @@
   }
 
   const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
+    const OAUTH_ROLE_KEY = 'jl_oauth_role';
 
   const seedJobs = [
     {
@@ -105,12 +106,22 @@
       const { data } = await supabase.auth.getSession();
       const user = data?.session?.user;
       if (!user) return null;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role,name,company,title,city,bio')
-        .eq('id', user.id)
-        .single();
-      return { id: user.id, email: user.email, role: profile?.role, name: profile?.name, company: profile?.company };
+        const { data: profileDataRaw } = await supabase
+          .from('profiles')
+          .select('role,name,company,title,city,bio')
+          .eq('id', user.id)
+          .single();
+        let profileData = profileDataRaw;
+        if (!profileData) {
+          const fallbackRole = localStorage.getItem(OAUTH_ROLE_KEY) || 'Seeker';
+          const upsertPayload = { id:user.id, role:fallbackRole, name:user.user_metadata?.full_name || user.email, company:'' };
+          await supabase.from('profiles').upsert(upsertPayload);
+          localStorage.removeItem(OAUTH_ROLE_KEY);
+          profileData = upsertPayload;
+        } else {
+          localStorage.removeItem(OAUTH_ROLE_KEY);
+        }
+        return { id: user.id, email: user.email, role: profileData?.role, name: profileData?.name, company: profileData?.company };
     }
     return getCurrentLocal();
   };
@@ -296,16 +307,37 @@
     if(!form) return;
     let selectedRole = 'Seeker';
     const roleButtons = form.querySelectorAll('.toggle-btn');
+      const googleBtn = form.querySelector('[data-google-auth]');
     roleButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         roleButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedRole = btn.textContent.trim();
+          if (googleBtn) googleBtn.dataset.role = selectedRole;
       });
     });
+      if (googleBtn) googleBtn.dataset.role = selectedRole;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       (async ()=>{
+          const startGoogleOAuth = async (role='Seeker') => {
+            if (!supabase) { alert('Google sign-in requires Supabase configuration.'); return; }
+            localStorage.setItem(OAUTH_ROLE_KEY, role || 'Seeker');
+            const isFile = window.location.origin.startsWith('file');
+            const redirectTo = isFile ? window.location.href : `${window.location.origin}/index.html`;
+            const { error } = await supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo, prompt:'select_account' } });
+            if (error) alert(error.message);
+          };
+
+          const wireGoogleAuthButtons = () => {
+            document.querySelectorAll('[data-google-auth]').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const role = btn.getAttribute('data-role') || 'Seeker';
+                startGoogleOAuth(role);
+              });
+            });
+          };
         const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
         const password = form.querySelector('input[name="password"]')?.value || '';
         if (supabase) {
@@ -389,12 +421,21 @@
       const user = await getCurrent();
       if(!user) return;
       const profileHref = user.role === 'Employer' ? 'company-profile.html' : 'user-profile.html';
+      const displayName = user.name || user.email || 'Account';
       auth.innerHTML = `
-        <a class="subtle" style="font-weight:700;" href="${profileHref}">${user.name || user.email} (${user.role})</a>
+        <a class="subtle" style="font-weight:700;" href="${profileHref}">${displayName} (${user.role})</a>
         <button class="btn-ghost" style="padding:8px 12px;font-size:0.85rem;" type="button" data-logout>Logout</button>
       `;
       auth.querySelector('[data-logout]')?.addEventListener('click', ()=>{ logout().then(()=>window.location.reload()); });
     })();
+  };
+
+  // Supabase auth listener keeps nav in sync on session changes
+  const wireAuthListener = () => {
+    if (!supabase) return;
+    supabase.auth.onAuthStateChange(() => {
+      renderNavAuth();
+    });
   };
 
   // Bootstrap
@@ -402,9 +443,11 @@
   wireNav();
   wireValidation();
   renderNavAuth();
+  wireAuthListener();
   await renderJobList();
   await renderJobDetail();
   wireRegisterForms();
   wireLoginForm();
   wireApplyForm();
+    wireGoogleAuthButtons();
 })();
