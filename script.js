@@ -1,151 +1,71 @@
-<<<<<<< HEAD
-// Lightweight demo backend with optional Supabase; falls back to localStorage when Supabase config is not provided.
+// Supabase-first implementation for JobLaunch (auth, jobs, applications)
 (async function(){
   const SUPABASE_URL = window.SUPABASE_URL || '';
   const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
-  let supabase = null;
-
-  // Attempt to init Supabase client when creds are provided
-  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-    try {
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
-      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (err) {
-      console.warn('Supabase not initialized, falling back to local demo:', err);
-      supabase = null;
-    }
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
+    console.error('Supabase configuration missing. Set window.SUPABASE_URL and window.SUPABASE_ANON_KEY.');
+    return;
   }
 
-  const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
-    const OAUTH_ROLE_KEY = 'jl_oauth_role';
-=======
-// Lightweight in-browser demo backend (localStorage)
-(function(){
-  const KEYS = { users:'jl_users', jobs:'jl_jobs', apps:'jl_apps', current:'jl_current_user' };
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const OAUTH_ROLE_KEY = 'jl_oauth_role';
 
-  const seedJobs = [
-    {
-      id:1,
-      title:'Web Developer',
-      company:'Allena',
-      location:'Mekelle',
-      salary:'15000/Month',
-      type:'Full Time',
-      posted:'2 months ago',
-      category:'Engineering',
-      description:'Own the frontend for Allena’s customer portal, delivering performant, responsive interfaces and collaborating closely with backend and design.',
-      responsibilities:[
-        'Build and ship modular UI components with modern JS.',
-        'Integrate REST endpoints securely and handle edge cases.',
-        'Continuously improve accessibility, performance, and DX.'
-      ],
-      requirements:[
-        '2+ years building production web apps.',
-        'Solid HTML, CSS, JavaScript fundamentals.',
-        'Experience with accessibility and perf profiling.'
-      ]
-    },
-    {
-      id:2,
-      title:'Digital Marketer',
-      company:'Northern Star',
-      location:'Dire Dawa',
-      salary:'200/Hour',
-      type:'Part Time',
-      posted:'4 months ago',
-      category:'Marketing',
-      description:'Design and optimize multi-channel growth campaigns for Northern Star, with a focus on measurable funnel improvements.',
-      responsibilities:[
-        'Plan, launch, and iterate on paid and organic campaigns.',
-        'Analyze channel performance and report actionable insights.',
-        'Collaborate with content/design to align messaging and creatives.'
-      ],
-      requirements:[
-        '1+ year in digital marketing or growth.',
-        'Hands-on with analytics/attribution tools.',
-        'Strong copy sense and audience targeting basics.'
-      ]
-    },
-    {
-      id:3,
-      title:'Business Manager',
-      company:'Pulte Homes',
-      location:'Axsum',
-      salary:'13000/Month',
-      type:'Full Time',
-      posted:'6 days ago',
-      category:'Operations',
-      description:'Lead operations at Pulte Homes, coordinating teams to hit quarterly targets and streamline processes.',
-      responsibilities:[
-        'Own quarterly goals and operational rhythms.',
-        'Coordinate cross-functional stakeholders and timelines.',
-        'Report KPIs and drive continuous process improvements.'
-      ],
-      requirements:[
-        '3+ years in operations or business management.',
-        'Proven stakeholder communication skills.',
-        'Data-driven decision-making mindset.'
-      ]
-    }
-  ];
-  const seedUsers = [
-    { id:'u-seeker', role:'Seeker', name:'Demo Seeker', email:'seeker@test.com', password:'StrongPass!23' },
-    { id:'u-employer', role:'Employer', name:'Demo Employer', email:'employer@test.com', password:'StrongPass!23' }
-  ];
-
-  const load = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
-  const save = (key, val) => localStorage.setItem(key, JSON.stringify(val));
-  const ensureSeed = () => {
-    if(!localStorage.getItem(KEYS.jobs)) save(KEYS.jobs, seedJobs);
-    if(!localStorage.getItem(KEYS.users)) save(KEYS.users, seedUsers);
-    if(!localStorage.getItem(KEYS.apps)) save(KEYS.apps, []);
+  const getSession = async () => {
+    const { data } = await supabase.auth.getSession();
+    return data.session;
   };
 
-<<<<<<< HEAD
-  const getCurrentLocal = () => load(KEYS.current, null);
-  const setCurrentLocal = (user) => save(KEYS.current, user);
-  const logoutLocal = () => localStorage.removeItem(KEYS.current);
-
-  // Current user (Supabase or local)
   const getCurrent = async () => {
-    if (supabase) {
-      const { data } = await supabase.auth.getSession();
-      const user = data?.session?.user;
-      if (!user) return null;
-        const { data: profileDataRaw } = await supabase
-          .from('profiles')
-          .select('role,name,company,title,city,bio')
-          .eq('id', user.id)
-          .single();
-        let profileData = profileDataRaw;
-        if (!profileData) {
-          const fallbackRole = localStorage.getItem(OAUTH_ROLE_KEY) || 'Seeker';
-          const upsertPayload = { id:user.id, role:fallbackRole, name:user.user_metadata?.full_name || user.email, company:'' };
-          await supabase.from('profiles').upsert(upsertPayload);
-          localStorage.removeItem(OAUTH_ROLE_KEY);
-          profileData = upsertPayload;
-        } else {
-          localStorage.removeItem(OAUTH_ROLE_KEY);
-        }
-        return { id: user.id, email: user.email, role: profileData?.role, name: profileData?.name, company: profileData?.company };
+    const session = await getSession();
+    const user = session?.user;
+    if (!user) return null;
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id, role, name, company, title, city, bio')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (error) { console.warn('profile fetch error', error); return null; }
+    if (!profile) {
+      const fallbackRole = localStorage.getItem(OAUTH_ROLE_KEY) || 'Seeker';
+      const upsertPayload = { id:user.id, role:fallbackRole, name:user.user_metadata?.full_name || user.email, company:'' };
+      await supabase.from('profiles').upsert(upsertPayload);
+      localStorage.removeItem(OAUTH_ROLE_KEY);
+      return { ...upsertPayload, email:user.email };
     }
-    return getCurrentLocal();
+    localStorage.removeItem(OAUTH_ROLE_KEY);
+    return { ...profile, email:user.email };
   };
 
   const logout = async () => {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
-    logoutLocal();
+    await supabase.auth.signOut();
   };
-=======
-  const getCurrent = () => load(KEYS.current, null);
-  const setCurrent = (user) => save(KEYS.current, user);
-  const logout = () => localStorage.removeItem(KEYS.current);
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
 
-  // Mobile navigation toggle for slide-in drawer
+  // Utilities
+  const getJobIdFromUrl = () => {
+    const id = new URLSearchParams(window.location.search).get('id');
+    return id ? Number(id) : null;
+  };
+
+  const functionFetch = async (name, { method='GET', params='', body=null } = {}) => {
+    const session = await getSession();
+    const token = session?.access_token;
+    const url = `${SUPABASE_URL}/functions/v1/${name}${params ? `?${params}` : ''}`;
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: body ? JSON.stringify(body) : null,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  };
+
+  // UI helpers
   const wireNav = () => {
     const navToggle = document.querySelector('.nav-toggle');
     if(!navToggle) return;
@@ -161,10 +81,8 @@
     document.querySelectorAll('.nav-links a, .auth-links a').forEach(link => link.addEventListener('click', closeNav));
   };
 
-  // Simple inline validation for forms marked data-validate
   const wireValidation = () => {
-    const forms = document.querySelectorAll('form[data-validate]');
-    forms.forEach(form => {
+    document.querySelectorAll('form[data-validate]').forEach(form => {
       form.setAttribute('novalidate','true');
       const clearErrors = () => {
         form.querySelectorAll('.error-text').forEach(node => node.remove());
@@ -197,113 +115,73 @@
     });
   };
 
-  const getJobIdFromUrl = () => {
-    const id = new URLSearchParams(window.location.search).get('id');
-    return id ? Number(id) : null;
-  };
-
-  // Render job listing grid
-<<<<<<< HEAD
+  // Render job listing grid with optional search query param ?q=
   const renderJobList = async () => {
     const grid = document.querySelector('[data-job-grid]');
     if(!grid) return;
-    let jobs = [];
-    if (supabase) {
-      const { data, error } = await supabase.from('jobs').select('*').order('posted_at', { ascending:false });
-      if (error) { console.warn('jobs fetch error', error); }
-      jobs = data || [];
-    } else {
-      jobs = load(KEYS.jobs, []);
-    }
-=======
-  const renderJobList = () => {
-    const grid = document.querySelector('[data-job-grid]');
-    if(!grid) return;
-    const jobs = load(KEYS.jobs, []);
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
-    grid.innerHTML = jobs.map(job => `
-      <article class="job-card">
-        <div class="job-header">
-          <div>
-            <div class="job-company">${job.company}</div>
-            <div class="job-location"><i class="fa-solid fa-location-dot"></i> ${job.location}</div>
+    grid.innerHTML = '<p class="subtle">Loading jobs...</p>';
+    const q = new URLSearchParams(window.location.search).get('q') || '';
+    try {
+      const { data } = await functionFetch('jobs', { params: new URLSearchParams({ q }).toString() });
+      const jobs = data || [];
+      if (!jobs.length) { grid.innerHTML = '<p class="subtle">No jobs found.</p>'; return; }
+      grid.innerHTML = jobs.map(job => `
+        <article class="job-card">
+          <div class="job-header">
+            <div>
+              <div class="job-company">${job.company || ''}</div>
+              <div class="job-location"><i class="fa-solid fa-location-dot"></i> ${job.location || ''}</div>
+            </div>
           </div>
-        </div>
-        <div class="job-role">${job.title}</div>
-        <div class="job-meta">
-<<<<<<< HEAD
-          <span><i class="fa-solid fa-briefcase"></i> ${job.type || ''}</span>
-          <span><i class="fa-regular fa-clock"></i> Posted ${job.posted || job.posted_at || ''}</span>
-        </div>
-        <div class="job-desc">${job.description || ''}</div>
-        <div class="job-footer">
-          <div class="job-salary">${job.salary || ''}</div>
-=======
-          <span><i class="fa-solid fa-briefcase"></i> ${job.type}</span>
-          <span><i class="fa-regular fa-clock"></i> Posted ${job.posted}</span>
-        </div>
-        <div class="job-desc">${job.description}</div>
-        <div class="job-footer">
-          <div class="job-salary">${job.salary}</div>
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
-          <a class="job-apply" href="apply.html?id=${job.id}" aria-label="Apply to ${job.title}">Apply</a>
-        </div>
-      </article>
-    `).join('');
+          <div class="job-role">${job.title}</div>
+          <div class="job-meta">
+            <span><i class="fa-solid fa-briefcase"></i> ${job.type || ''}</span>
+            <span><i class="fa-regular fa-clock"></i> ${job.posted_at ? new Date(job.posted_at).toLocaleDateString() : ''}</span>
+          </div>
+          <div class="job-desc">${job.description || ''}</div>
+          <div class="job-footer">
+            <div class="job-salary">${job.salary || ''}</div>
+            <a class="job-apply" href="apply.html?id=${job.id}" aria-label="Apply to ${job.title}">Apply</a>
+          </div>
+        </article>
+      `).join('');
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = '<p class="subtle">Failed to load jobs.</p>';
+    }
   };
 
-  // Populate job detail page
-<<<<<<< HEAD
   const renderJobDetail = async () => {
     const wrap = document.querySelector('[data-job-detail]');
     if(!wrap) return;
     const jobId = getJobIdFromUrl();
-    let job = null;
-    if (supabase) {
-      const { data, error } = await supabase.from('jobs').select('*').eq('id', jobId).single();
-      if (error) { console.warn('job fetch error', error); }
-      job = data;
-    } else {
-      job = load(KEYS.jobs, []).find(j => j.id === jobId);
+    if(!jobId){ wrap.innerHTML = '<p class="subtle">Job not found.</p>'; return; }
+    wrap.innerHTML = '<p class="subtle">Loading...</p>';
+    try {
+      const { data: job } = await functionFetch('jobs', { params: new URLSearchParams({ id: String(jobId) }).toString() });
+      if(!job){ wrap.innerHTML = '<p class="subtle">Job not found.</p>'; return; }
+      const applyLink = wrap.querySelector('[data-apply-link]');
+      if(applyLink) applyLink.href = `apply.html?id=${job.id}`;
+      wrap.querySelector('[data-job-title]').textContent = job.title;
+      wrap.querySelector('[data-job-company]').textContent = job.company || '';
+      wrap.querySelector('[data-job-location]').textContent = job.location || '';
+      wrap.querySelector('[data-job-salary]').textContent = job.salary || '';
+      wrap.querySelector('[data-job-type]').textContent = job.type || '';
+      wrap.querySelector('[data-job-category]').textContent = job.category || '';
+      wrap.querySelector('[data-job-posted]').textContent = job.posted_at ? new Date(job.posted_at).toLocaleDateString() : '';
+      wrap.querySelector('[data-job-desc]').textContent = job.description || '';
+      wrap.querySelector('[data-job-resp]').innerHTML = (job.responsibilities || []).map((r) => `<li>${r}</li>`).join('');
+      wrap.querySelector('[data-job-req]').innerHTML = (job.requirements || []).map((r) => `<li>${r}</li>`).join('');
+    } catch (err) {
+      console.error(err);
+      wrap.innerHTML = '<p class="subtle">Failed to load job.</p>';
     }
-=======
-  const renderJobDetail = () => {
-    const wrap = document.querySelector('[data-job-detail]');
-    if(!wrap) return;
-    const jobId = getJobIdFromUrl();
-    const job = load(KEYS.jobs, []).find(j => j.id === jobId);
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
-    if(!job){ wrap.innerHTML = '<p class="subtle">Job not found.</p>'; return; }
-    const applyLink = wrap.querySelector('[data-apply-link]');
-    if(applyLink) applyLink.href = `apply.html?id=${job.id}`;
-    wrap.querySelector('[data-job-title]').textContent = job.title;
-    wrap.querySelector('[data-job-company]').textContent = job.company;
-    wrap.querySelector('[data-job-location]').textContent = job.location;
-    wrap.querySelector('[data-job-salary]').textContent = job.salary;
-    wrap.querySelector('[data-job-type]').textContent = job.type;
-<<<<<<< HEAD
-    wrap.querySelector('[data-job-category]').textContent = job.category || '';
-    wrap.querySelector('[data-job-posted]').textContent = job.posted || job.posted_at || '';
-    wrap.querySelector('[data-job-desc]').textContent = job.description || '';
-    const resp = job.responsibilities || [];
-    const reqs = job.requirements || [];
-    wrap.querySelector('[data-job-resp]').innerHTML = resp.map(r => `<li>${r}</li>`).join('');
-    wrap.querySelector('[data-job-req]').innerHTML = reqs.map(r => `<li>${r}</li>`).join('');
-=======
-    wrap.querySelector('[data-job-category]').textContent = job.category;
-    wrap.querySelector('[data-job-posted]').textContent = job.posted;
-    wrap.querySelector('[data-job-desc]').textContent = job.description;
-    wrap.querySelector('[data-job-resp]').innerHTML = job.responsibilities.map(r => `<li>${r}</li>`).join('');
-    wrap.querySelector('[data-job-req]').innerHTML = job.requirements.map(r => `<li>${r}</li>`).join('');
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
   };
 
-  // Register forms (seeker/employer)
   const wireRegisterForms = () => {
     document.querySelectorAll('[data-register-form]').forEach(form => {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-<<<<<<< HEAD
         (async ()=>{
           const role = form.dataset.role;
           const fd = new FormData(form);
@@ -313,221 +191,106 @@
           const email = (fd.get('email') || fd.get('workEmail') || '').toString().toLowerCase();
           if(!email){ alert('Email is required.'); return; }
 
-          if (supabase) {
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            if (error) { alert(error.message); return; }
-            const userId = data?.user?.id;
-            if (userId) {
-              await supabase.from('profiles').upsert({ id:userId, role, name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User', company: role === 'Employer' ? (fd.get('company') || '') : '' });
-            }
-            alert('Account created. Check email if confirmation is required.');
-            window.location.href = 'index.html';
-            return;
+          const { data, error } = await supabase.auth.signUp({ email, password });
+          if (error) { alert(error.message); return; }
+          const userId = data?.user?.id;
+          if (userId) {
+            await supabase.from('profiles').upsert({
+              id:userId,
+              role,
+              name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
+              company: role === 'Employer' ? (fd.get('company') || '') : ''
+            });
           }
-
-          // local fallback
-          const users = load(KEYS.users, []);
-          if(users.some(u => u.email === email)){ alert('An account with this email already exists.'); return; }
-          const user = {
-            id:`u-${Date.now()}`,
-            role,
-            email,
-            password,
-            name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
-            company: role === 'Employer' ? (fd.get('company') || '') : ''
-          };
-          users.push(user);
-          save(KEYS.users, users);
-          setCurrentLocal({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-          alert('Account created. You are now signed in.');
+          alert('Account created. Check email if confirmation is required.');
           window.location.href = 'index.html';
         })();
-=======
-        const role = form.dataset.role;
-        const fd = new FormData(form);
-        const password = fd.get('password')?.toString() || '';
-        const confirm = fd.get('confirmPassword')?.toString() || '';
-        if(password !== confirm){ alert('Passwords must match.'); return; }
-        const email = (fd.get('email') || fd.get('workEmail') || '').toString().toLowerCase();
-        if(!email){ alert('Email is required.'); return; }
-        const users = load(KEYS.users, []);
-        if(users.some(u => u.email === email)){ alert('An account with this email already exists.'); return; }
-        const user = {
-          id:`u-${Date.now()}`,
-          role,
-          email,
-          password,
-          name: fd.get('fullName') || fd.get('contactName') || fd.get('company') || 'User',
-          company: role === 'Employer' ? (fd.get('company') || '') : ''
-        };
-        users.push(user);
-        save(KEYS.users, users);
-        setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-        alert('Account created. You are now signed in.');
-        window.location.href = 'index.html';
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
       });
     });
   };
 
-  // Login form
+  const startGoogleOAuth = async (role='Seeker') => {
+    localStorage.setItem(OAUTH_ROLE_KEY, role || 'Seeker');
+    const isFile = window.location.origin.startsWith('file');
+    const redirectTo = isFile ? window.location.href : `${window.location.origin}/index.html`;
+    const { error } = await supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo, prompt:'select_account' } });
+    if (error) alert(error.message);
+  };
+
+  const wireGoogleAuthButtons = () => {
+    document.querySelectorAll('[data-google-auth]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const role = btn.getAttribute('data-role') || 'Seeker';
+        startGoogleOAuth(role);
+      });
+    });
+  };
+
   const wireLoginForm = () => {
     const form = document.querySelector('[data-login-form]');
     if(!form) return;
     let selectedRole = 'Seeker';
     const roleButtons = form.querySelectorAll('.toggle-btn');
-<<<<<<< HEAD
-      const googleBtn = form.querySelector('[data-google-auth]');
-=======
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
+    const googleBtn = form.querySelector('[data-google-auth]');
     roleButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         roleButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedRole = btn.textContent.trim();
-<<<<<<< HEAD
-          if (googleBtn) googleBtn.dataset.role = selectedRole;
+        if (googleBtn) googleBtn.dataset.role = selectedRole;
       });
     });
-      if (googleBtn) googleBtn.dataset.role = selectedRole;
+    if (googleBtn) googleBtn.dataset.role = selectedRole;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       (async ()=>{
-          const startGoogleOAuth = async (role='Seeker') => {
-            if (!supabase) { alert('Google sign-in requires Supabase configuration.'); return; }
-            localStorage.setItem(OAUTH_ROLE_KEY, role || 'Seeker');
-            const isFile = window.location.origin.startsWith('file');
-            const redirectTo = isFile ? window.location.href : `${window.location.origin}/index.html`;
-            const { error } = await supabase.auth.signInWithOAuth({ provider:'google', options:{ redirectTo, prompt:'select_account' } });
-            if (error) alert(error.message);
-          };
-
-          const wireGoogleAuthButtons = () => {
-            document.querySelectorAll('[data-google-auth]').forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const role = btn.getAttribute('data-role') || 'Seeker';
-                startGoogleOAuth(role);
-              });
-            });
-          };
         const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
         const password = form.querySelector('input[name="password"]')?.value || '';
-        if (supabase) {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) { alert(error.message); return; }
-          const user = data?.user;
-          if (!user) { alert('Invalid credentials.'); return; }
-          const { data: profile } = await supabase.from('profiles').select('role,name,company').eq('id', user.id).single();
-          if (profile?.role !== selectedRole) { alert('Role mismatch for this account.'); return; }
-          alert(`Welcome back, ${profile?.name || user.email}!`);
-          window.location.href = 'index.html';
-          return;
-        }
-
-        const users = load(KEYS.users, []);
-        const user = users.find(u => u.email === email && u.password === password && u.role === selectedRole);
-        if(!user){ alert('Invalid credentials or role.'); return; }
-        setCurrentLocal({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-        alert(`Welcome back, ${user.name || user.email}!`);
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { alert(error.message); return; }
+        const user = data?.user;
+        if (!user) { alert('Invalid credentials.'); return; }
+        const { data: profile } = await supabase.from('profiles').select('role,name,company').eq('id', user.id).single();
+        if (profile?.role !== selectedRole) { alert('Role mismatch for this account.'); return; }
+        alert(`Welcome back, ${profile?.name || user.email}!`);
         window.location.href = 'index.html';
       })();
-=======
-      });
-    });
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = form.querySelector('input[name="email"]')?.value.trim().toLowerCase();
-      const password = form.querySelector('input[name="password"]')?.value || '';
-      const users = load(KEYS.users, []);
-      const user = users.find(u => u.email === email && u.password === password && u.role === selectedRole);
-      if(!user){ alert('Invalid credentials or role.'); return; }
-      setCurrent({ id:user.id, role:user.role, email:user.email, name:user.name, company:user.company });
-      alert(`Welcome back, ${user.name || user.email}!`);
-      window.location.href = 'index.html';
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     });
   };
 
-  // Apply form (seeker only, prevent duplicates)
   const wireApplyForm = () => {
     const form = document.querySelector('[data-apply-form]');
     if(!form) return;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-<<<<<<< HEAD
       (async ()=>{
         const user = await getCurrent();
         if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
         const jobId = getJobIdFromUrl();
         if(!jobId){ alert('Missing job id.'); return; }
         const fd = new FormData(form);
-
-        if (supabase) {
-          const { error } = await supabase.from('applications').insert({
+        try {
+          await functionFetch('applications', { method:'POST', body:{
             job_id: jobId,
-            seeker_id: user.id,
             cover: fd.get('cover') || '',
             telegram: fd.get('telegram') || '',
-            portfolio: fd.get('portfolio') || '',
-            status: 'Pending'
-          });
-          if (error) {
-            const dup = error.message && error.message.toLowerCase().includes('duplicate');
-            alert(dup ? 'You already applied to this job.' : error.message);
-            return;
-          }
+            portfolio: fd.get('portfolio') || ''
+          }});
           alert('Application submitted!');
           window.location.href = 'thank-you-apply.html';
-          return;
+        } catch (err) {
+          const msg = err.message || '';
+          const dup = msg.toLowerCase().includes('already applied');
+          alert(dup ? 'You already applied to this job.' : msg);
         }
-
-        const apps = load(KEYS.apps, []);
-        if(apps.some(a => a.jobId === jobId && a.userId === user.id)){ alert('You already applied to this job.'); return; }
-        apps.push({
-          id:`app-${Date.now()}`,
-          jobId,
-          userId:user.id,
-          cover: fd.get('cover') || '',
-          telegram: fd.get('telegram') || '',
-          portfolio: fd.get('portfolio') || '',
-          createdAt:new Date().toISOString(),
-          status:'Pending'
-        });
-        save(KEYS.apps, apps);
-        alert('Application submitted!');
-        window.location.href = 'thank-you-apply.html';
       })();
-=======
-      const user = getCurrent();
-      if(!user || user.role !== 'Seeker'){ alert('Please log in as a Seeker to apply.'); return; }
-      const jobId = getJobIdFromUrl();
-      if(!jobId){ alert('Missing job id.'); return; }
-      const apps = load(KEYS.apps, []);
-      if(apps.some(a => a.jobId === jobId && a.userId === user.id)){ alert('You already applied to this job.'); return; }
-      const fd = new FormData(form);
-      apps.push({
-        id:`app-${Date.now()}`,
-        jobId,
-        userId:user.id,
-        cover: fd.get('cover') || '',
-        telegram: fd.get('telegram') || '',
-        portfolio: fd.get('portfolio') || '',
-        createdAt:new Date().toISOString(),
-        status:'Pending'
-      });
-      save(KEYS.apps, apps);
-      alert('Application submitted!');
-      window.location.href = 'thank-you-apply.html';
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
     });
   };
 
-  // Show current user + logout in nav
   const renderNavAuth = () => {
     const auth = document.querySelector('.auth-links');
     if(!auth) return;
-<<<<<<< HEAD
     (async ()=>{
       const user = await getCurrent();
       if(!user) return;
@@ -541,16 +304,176 @@
     })();
   };
 
-  // Supabase auth listener keeps nav in sync on session changes
   const wireAuthListener = () => {
-    if (!supabase) return;
     supabase.auth.onAuthStateChange(() => {
       renderNavAuth();
     });
   };
 
+  // Employer: create new job
+  const wireNewJobForm = () => {
+    const form = document.querySelector('[data-new-job-form]');
+    if(!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      (async ()=>{
+        const user = await getCurrent();
+        if(!user || user.role !== 'Employer'){ alert('Employer account required.'); return; }
+        const fd = new FormData(form);
+        const payload = {
+          title: fd.get('title'),
+          description: fd.get('description'),
+          salary: fd.get('salary') || '',
+          location: fd.get('location') || '',
+          category: fd.get('category') || '',
+          type: fd.get('type') || '',
+          company: fd.get('company') || user.company || ''
+        };
+        if(!payload.title || !payload.description){ alert('Title and description are required.'); return; }
+        try {
+          await functionFetch('jobs', { method:'POST', body: payload });
+          alert('Job created.');
+          window.location.href = 'company-jobs.html';
+        } catch (err) {
+          alert(err.message || 'Failed to create job');
+        }
+      })();
+    });
+  };
+
+  const renderEmployerJobs = async () => {
+    const grid = document.querySelector('[data-employer-jobs]');
+    if(!grid) return;
+    const user = await getCurrent();
+    if(!user || user.role !== 'Employer'){ grid.innerHTML = '<p class="subtle">Employer sign-in required.</p>'; return; }
+    grid.innerHTML = '<p class="subtle">Loading jobs...</p>';
+    const { data, error } = await supabase.from('jobs').select('*').eq('owner_id', user.id).order('posted_at', { ascending:false });
+    if (error) { grid.innerHTML = '<p class="subtle">Failed to load jobs.</p>'; return; }
+    if (!data?.length) { grid.innerHTML = '<p class="subtle">No jobs posted yet.</p>'; return; }
+    grid.innerHTML = data.map(job => `
+      <article class="job-card">
+        <div class="job-header">
+          <div>
+            <div class="job-company">${job.title}</div>
+            <div class="job-location"><i class="fa-solid fa-location-dot"></i> ${job.location || ''}</div>
+          </div>
+          <span style="padding:6px 10px;border-radius:8px;background:rgba(0,199,199,0.18);color:var(--accent-teal);font-weight:800;">${job.type || 'Active'}</span>
+        </div>
+        <div class="job-role">${job.company || ''}</div>
+        <div class="job-meta">
+          <span><i class="fa-solid fa-calendar"></i> ${job.posted_at ? new Date(job.posted_at).toLocaleDateString() : ''}</span>
+        </div>
+        <div class="job-footer" style="gap:10px;flex-wrap:wrap;">
+          <a class="job-apply" href="company-applicants.html?job_id=${job.id}">Applicants</a>
+          <button class="btn btn-ghost" type="button" data-delete-job="${job.id}">Delete</button>
+        </div>
+      </article>
+    `).join('');
+    grid.querySelectorAll('[data-delete-job]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if(!confirm('Delete this job?')) return;
+        try {
+          await functionFetch('jobs', { method:'DELETE', body:{ id: Number(btn.getAttribute('data-delete-job')) } });
+          renderEmployerJobs();
+        } catch (err) {
+          alert(err.message || 'Failed to delete job');
+        }
+      });
+    });
+  };
+
+  const renderEmployerApplicants = async () => {
+    const grid = document.querySelector('[data-employer-applicants]');
+    if(!grid) return;
+    const user = await getCurrent();
+    if(!user || user.role !== 'Employer'){ grid.innerHTML = '<p class="subtle">Employer sign-in required.</p>'; return; }
+    const jobId = Number(new URLSearchParams(window.location.search).get('job_id'));
+    if(!jobId){ grid.innerHTML = '<p class="subtle">Select a job from your list to view applicants.</p>'; return; }
+    grid.innerHTML = '<p class="subtle">Loading applicants...</p>';
+    try {
+      const { data } = await functionFetch('applications', { params: new URLSearchParams({ job_id: String(jobId) }).toString() });
+      if (!data?.length) { grid.innerHTML = '<p class="subtle">No applicants yet.</p>'; return; }
+      grid.innerHTML = data.map(app => `
+        <article class="job-card">
+          <div class="job-header">
+            <div>
+              <div class="job-company">${app.seeker?.name || 'Applicant'}</div>
+              <div class="job-location"><i class="fa-solid fa-envelope"></i> ${app.seeker?.city || ''}</div>
+            </div>
+            <span style="padding:6px 10px;border-radius:8px;background:rgba(0,209,45,0.18);color:var(--accent-green);font-weight:800;">${app.status}</span>
+          </div>
+          <div class="job-role">Cover: ${app.cover || '—'}</div>
+          <div class="job-meta">
+            <span><i class="fa-solid fa-calendar"></i> Applied ${new Date(app.created_at).toLocaleDateString()}</span>
+            ${app.telegram ? `<span><i class="fa-solid fa-paper-plane"></i> ${app.telegram}</span>` : ''}
+            ${app.portfolio ? `<span><i class="fa-solid fa-link"></i> <a href="${app.portfolio}" target="_blank" rel="noreferrer">Portfolio</a></span>` : ''}
+          </div>
+          <div class="job-footer" style="gap:10px;flex-wrap:wrap;">
+            <select data-status-select="${app.id}" class="input" style="max-width:200px;">
+              <option ${app.status==='Pending'?'selected':''}>Pending</option>
+              <option ${app.status==='Interview Scheduled'?'selected':''}>Interview Scheduled</option>
+              <option ${app.status==='Rejected'?'selected':''}>Rejected</option>
+              <option ${app.status==='Hired'?'selected':''}>Hired</option>
+            </select>
+            <button class="btn" type="button" data-update-status="${app.id}">Update</button>
+          </div>
+        </article>
+      `).join('');
+
+      grid.querySelectorAll('[data-update-status]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const appId = Number(btn.getAttribute('data-update-status'));
+          const select = grid.querySelector(`[data-status-select="${appId}"]`);
+          const status = select?.value;
+          try {
+            await functionFetch('applications', { method:'PATCH', body:{ application_id: appId, status } });
+            alert('Status updated');
+          } catch (err) {
+            alert(err.message || 'Failed to update status');
+          }
+        });
+      });
+    } catch (err) {
+      grid.innerHTML = `<p class="subtle">${err.message || 'Failed to load applicants'}</p>`;
+    }
+  };
+
+  const renderMyApplications = async () => {
+    const grid = document.querySelector('[data-my-applications]');
+    if(!grid) return;
+    const user = await getCurrent();
+    if(!user || user.role !== 'Seeker'){ grid.innerHTML = '<p class="subtle">Sign in as a Seeker to view applications.</p>'; return; }
+    grid.innerHTML = '<p class="subtle">Loading...</p>';
+    try {
+      const { data } = await functionFetch('applications', { params: 'mine=1' });
+      if (!data?.length) { grid.innerHTML = '<p class="subtle">No applications yet.</p>'; return; }
+      grid.innerHTML = data.map(app => `
+        <article class="job-card">
+          <div class="job-header">
+            <div>
+              <div class="job-company">${app.jobs?.company || ''}</div>
+              <div class="job-location"><i class="fa-solid fa-location-dot"></i> ${app.jobs?.location || ''}</div>
+            </div>
+            <span style="padding:6px 10px;border-radius:8px;background:rgba(0,209,45,0.18);color:var(--accent-green);font-weight:800;">${app.status}</span>
+          </div>
+          <div class="job-role">${app.jobs?.title || ''}</div>
+          <div class="job-meta">
+            <span><i class="fa-solid fa-briefcase"></i> ${app.jobs?.type || ''}</span>
+            <span><i class="fa-regular fa-clock"></i> Applied ${app.created_at ? new Date(app.created_at).toLocaleDateString() : ''}</span>
+          </div>
+          <div class="job-desc">Cover: ${app.cover || '—'}</div>
+          <div class="job-footer">
+            <div class="job-salary">${app.jobs?.salary || ''}</div>
+            <a class="job-apply" href="job-details.html?id=${app.job_id}">View Details</a>
+          </div>
+        </article>
+      `).join('');
+    } catch (err) {
+      grid.innerHTML = `<p class="subtle">${err.message || 'Failed to load applications'}</p>`;
+    }
+  };
+
   // Bootstrap
-  if(!supabase) ensureSeed();
   wireNav();
   wireValidation();
   renderNavAuth();
@@ -560,27 +483,10 @@
   wireRegisterForms();
   wireLoginForm();
   wireApplyForm();
-    wireGoogleAuthButtons();
-=======
-    const user = getCurrent();
-    if(!user) return;
-    const profileHref = user.role === 'Employer' ? 'company-profile.html' : 'user-profile.html';
-    auth.innerHTML = `
-      <a class="subtle" style="font-weight:700;" href="${profileHref}">${user.name || user.email} (${user.role})</a>
-      <button class="btn-ghost" style="padding:8px 12px;font-size:0.85rem;" type="button" data-logout>Logout</button>
-    `;
-    auth.querySelector('[data-logout]')?.addEventListener('click', ()=>{ logout(); window.location.reload(); });
-  };
-
-  // Bootstrap
-  ensureSeed();
-  wireNav();
-  wireValidation();
-  renderNavAuth();
-  renderJobList();
-  renderJobDetail();
-  wireRegisterForms();
-  wireLoginForm();
-  wireApplyForm();
->>>>>>> ba5c473d840d19a62ad8d5a1216b79e2ca1250bf
+  wireGoogleAuthButtons();
+  wireNewJobForm();
+  renderEmployerJobs();
+  renderEmployerApplicants();
+  renderMyApplications();
 })();
+

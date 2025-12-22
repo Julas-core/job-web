@@ -1,0 +1,27 @@
+# Copilot Instructions for JobLaunch
+
+- Project is a static multi-page job board UI; all behavior and data flow live in [script.js](../script.js) with styling in [style.css](../style.css) and HTML views in the repo root (e.g., [index.html](../index.html), [login.html](../login.html), [register.html](../register.html), [job-details.html](../job-details.html), [apply.html](../apply.html)).
+- Run locally by opening an HTML file or serving the root (`npx serve .`); fonts and icons load from CDNs (Google Fonts Sora/Manrope, Font Awesome).
+- Optional Supabase backend: set `window.SUPABASE_URL` and `window.SUPABASE_ANON_KEY` before [script.js](../script.js) loads; otherwise it falls back to localStorage.
+- Local data model keys: `jl_users`, `jl_jobs`, `jl_apps`, `jl_current_user` seeded on first load with demo users and jobs; clearing localStorage resets the demo.
+- Supabase tables expected: `profiles` (role, name, company, title, city, bio), `jobs` (fields align to seeded job shape: id/title/company/location/salary/type/category/posted_at/description/responsibilities/requirements), `applications` (job_id, seeker_id, cover, telegram, portfolio, status) with a unique constraint on job_id + seeker_id to block duplicates.
+- Auth flows: register forms are marked `data-register-form` with `data-role` set to Seeker/Employer; login uses a role toggle (button text defines the role) and checks for role match; Google OAuth buttons need `data-google-auth` plus optional `data-role`.
+- Current user state is derived from Supabase session when configured; otherwise stored in `jl_current_user`. Logout removes the session/localStorage entry and reloads.
+- Nav auth area (in each page header) is replaced at runtime with the signed-in user and a logout button; profile links route to employer vs seeker dashboards.
+- Navigation drawer: `.nav-toggle` toggles the `nav-open` body class; clicking nav/auth links or pressing Escape closes it.
+- Forms with `data-validate` use inline validation that injects `.error-text` messages next to invalid fields and focuses the first invalid input.
+- Job listing grid requires an element with `data-job-grid`; jobs are pulled from Supabase `jobs` (ordered by `posted_at` desc) or localStorage seeds and rendered as cards linking to `apply.html?id={id}`.
+- Job detail page needs a wrapper `data-job-detail`; it reads `?id=` to fetch the matching job (Supabase or local) and fills child nodes marked with `data-job-title`, `data-job-company`, `data-job-location`, `data-job-salary`, `data-job-type`, `data-job-category`, `data-job-posted`, `data-job-desc`, `data-job-resp`, `data-job-req`. The apply CTA uses `[data-apply-link]`.
+- Apply form requires `data-apply-form`; only Seeker role can submit. Duplicate applications are blocked per user/job (Supabase unique constraint or localStorage check). Fields stored: cover, telegram, portfolio; success redirects to [thank-you-apply.html](../thank-you-apply.html).
+- Role-aware login: when Supabase is enabled, the chosen role must match the `profiles.role` value; otherwise login fails with a role mismatch alert.
+- Google OAuth helper stores the intended role in `jl_oauth_role` before redirect; redirects to `index.html` unless running from file://.
+- Register flow seeds the profile on Supabase via `profiles.upsert` or saves locally, then signs in and redirects home; for Employer role, `company` is captured when present.
+- Styling: theme variables and accent gradients live under `:root` in [style.css](../style.css); shared button classes include `.btn`, `.btn-ghost`, `.btn-green`. Responsive breakpoints at 1100px, 800px, 640px, 480px.
+- HTML sections rely on BEM-like utility classes plus data attributes; keep new interactivity aligned with existing data-* hooks rather than introducing new query selectors when possible.
+- Category/listing pages expect job cards in the same shape as seeds; keep `id` numeric and stable because detail/apply pages read `?id=`.
+- Demo credentials (local mode): seeker@test.com / StrongPass!23 (Seeker) and employer@test.com / StrongPass!23 (Employer). Use these for manual QA in fallback mode.
+- Use alerts for inline UX feedback to stay consistent with existing flows; navigation after mutations typically redirects to `index.html` or thank-you pages.
+- Assets live under [assets/](../assets); replace hero and supporting images there. Additional design references reside in [designs/](../designs).
+- If adding new forms, prefer the existing validation helper (`data-validate`) instead of custom validation logic.
+- When extending Supabase usage, gate new calls so localStorage fallback remains functional (check for `supabase` truthy first).
+- Duplicated apply protection and auth role enforcement are user-facing guarantees; keep them intact when modifying apply/login/register flows.

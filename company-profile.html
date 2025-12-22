@@ -29,18 +29,19 @@
           <a href="catagories.cata.html">Job Listings</a>
         </div>
 
-        <form class="company-form" style="margin-top:20px;">
-          <input class="input" type="text" placeholder="Responsibility">
-          <textarea class="input" style="grid-column:2/-1;min-height:180px;" placeholder="Full Job Description"></textarea>
-          <input class="input" type="text" placeholder="Location">
-          <input class="input" type="text" placeholder="Job Type">
-          <input class="input full" type="text" placeholder="Requirement">
-          <input class="input full" type="text" placeholder="Salary (Optional)">
+        <form class="company-form" style="margin-top:20px;" data-new-job-form data-validate>
+          <input class="input" type="text" name="title" placeholder="Job Title" aria-label="Job Title" required>
+          <textarea class="input" name="description" style="grid-column:2/-1;min-height:180px;" placeholder="Full Job Description" aria-label="Full Job Description" required></textarea>
+          <input class="input" type="text" name="location" placeholder="Location" aria-label="Location">
+          <input class="input" type="text" name="type" placeholder="Job Type" aria-label="Job Type">
+          <input class="input full" type="text" name="category" placeholder="Category" aria-label="Category">
+          <input class="input full" type="text" name="salary" placeholder="Salary (Optional)" aria-label="Salary">
+          <input class="input full" type="text" name="company" placeholder="Company (optional override)" aria-label="Company">
+          <div class="full" style="margin-top:6px; text-align:right; display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-ghost" type="reset">Reset</button>
+            <button class="btn" type="submit">Save Job</button>
+          </div>
         </form>
-
-        <div style="margin-top:20px; text-align:right;">
-          <button class="btn" type="button">Save Job</button>
-        </div>
       </div>
     </div>
   </section>
