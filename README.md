@@ -1,10 +1,10 @@
 # Group 8 
-  *names*                  *id*
-    julas mohammednur id ugr/189777/16
-    mekbb leul id ugr/188422/16
-    netsanet haile ugr/188571/16
-    tsgabu measho ugr/188767/16
-    faniel negasi ugr/188099/16
+  *Names and ids of memebers*
+    #1.julas mohammednur id ugr/189777/16
+    #2.mekbb leul id ugr/188422/16
+    #3.netsanet haile ugr/188571/16
+    #4.tsgabu measho ugr/188767/16
+    #5.faniel negasi ugr/188099/16
 # JobLaunch - Recruitment Portal Prototype
 
 JobLaunch is a job portal application developed by Computer Science students at Mekelle University. It connects job seekers with employers, allowing companies to post job openings and candidates to apply for them seamlessly.
