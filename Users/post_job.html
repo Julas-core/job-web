@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobLaunch | Post New Job</title>
+  <meta http-equiv="refresh" content="0; url=post_job.php">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body class="page-wrap">
+  <header class="navbar">
+        <div class="brand">JobLaunch</div>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+        <div class="nav-drawer">
+            <div class="auth-links">
+                <a href="../login.html">Login</a>
+                <span class="divider">|</span>
+                <a href="../register.html">Register</a>
+            </div>
+            <div class="nav-links">
+                <a class="active" href="../index.html">Home</a>
+                <a href="../catagories.html">Categories</a>
+                <a href="../about.html">AboutUs</a>
+                <a href="../contact.html">ContactUs</a>
+            </div>
+        </div>
+    </header>
+  <section class="dashboard-section container">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="avatar" style="background:#dcdcdc;"></div>
+        <h3>Company Name</h3>
+        <nav>
+          <a class="active" href="post_job.html">Post New Job</a>
+          <a href="my_posting.html">Total Job Posted</a>
+          <a href="view_applications.html">Total Applicants</a>
+          <!-- <a href="my_posting.html">Manage Jobs</a> -->
+          <a href="settings.html">Setting</a>
+          <a href="more.html">More</a>
+        </nav>
+      </aside>
+
+      <div class="dashboard-main">
+        <div class="dashboard-header-actions">
+          <a href="#">Sign Out</a>
+          <a href="../catagories.html">Job Listings</a>
+        </div>
+
+        <h1 class="section-title" style="text-align: left; margin-top: 0;">Post a New Job</h1>
+
+        <!-- Added action, method, and name attributes -->
+        <form class="company-form" action="../backendwithphp/new_jobs.php" method="POST">
+          <input class="input" type="text" name="title" placeholder="Job Title / Responsibility" required>
+          <textarea class="input" name="description" style="grid-column:2/-1;min-height:180px;" placeholder="Full Job Description" required></textarea>
+          <input class="input" type="text" name="location" placeholder="Location" required>
+          
+          <!-- Changed to Select Dropdown for ENUM -->
+          <select class="input" name="type" required style="color: #fff; background-color: #1f1f1f;">
+            <option value="" disabled selected>Select Job Type</option>
+            <option value="Full Time">Full Time</option>
+            <option value="Part Time">Part Time</option>
+            <option value="Contract">Contract</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Internship">Internship</option>
+          </select>
+
+          <input class="input full" type="text" name="requirements" placeholder="Requirements">
+          <input class="input full" type="text" name="salary" placeholder="Salary (Optional)">
+          
+          <div style="margin-top:10px; text-align:right; grid-column: 1 / -1;">
+            <button class="btn" type="submit">Save Job</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
