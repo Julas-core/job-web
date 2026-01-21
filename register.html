@@ -6,25 +6,7 @@
   <title>JobLaunch | Register</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Page-specific styling aligned to signup mocks */
-    .register-hero-wrap{min-height:calc(100vh - 140px);display:grid;grid-template-columns:1.05fr 0.95fr;gap:28px;align-items:center;padding:60px 0 50px;}
-    .register-info{background:linear-gradient(145deg,#134d62,#0c1f3b);border-radius:22px;padding:36px 30px;box-shadow:0 26px 48px rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.06);color:#dff8f6;}
-    .register-info h1{margin:0 0 12px;font-size:2.5rem;font-family:'Sora',sans-serif;}
-    .register-info .subtle{display:block;font-size:1.05rem;color:rgba(223,248,246,0.82);max-width:520px;margin-bottom:18px;}
-    .register-pills{display:flex;gap:12px;flex-wrap:wrap;}
-    .register-pill{padding:10px 14px;border-radius:12px;background:rgba(0,199,199,0.14);color:#dff8f6;font-weight:800;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(0,199,199,0.22);}
 
-    .register-card{background:transparent;border-radius:20px;padding:24px 0;box-shadow:none;border:1px solid rgba(255,255,255,0.08);width:100%;}
-    .register-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
-    .register-tab{background:transparent;border:2px solid rgba(0,199,199,0.6);color:var(--text);border-radius:12px;padding:12px;font-weight:800;cursor:pointer;transition:all .12s ease;}
-    .register-tab.active{background:linear-gradient(120deg,#00c7c7,#7c1fd2);color:#041;box-shadow:0 14px 30px rgba(0,0,0,0.6);}
-    .register-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:6px;}
-    .register-form .full{grid-column:1/-1;}
-    .register-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:12px;}
-    .register-note{font-size:0.95rem;color:rgba(255,255,255,0.75);margin-top:10px;}
-    @media (max-width:960px){.register-hero-wrap{grid-template-columns:1fr;padding:36px 0;}.register-info{order:1;}.register-card{order:2;}}
-  </style>
 </head>
 <body class="page-wrap">
   <header class="navbar">
@@ -42,7 +24,7 @@
         <a href="about.html">AboutUs</a>
         <a href="contact.html">ContactUs</a>
       </div>
-    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+    </div>
   </header>
 
   <main class="container">
@@ -63,87 +45,64 @@
           <button class="register-tab" data-target="employer">Employer Signup</button>
         </div>
 
-        <form class="register-form" id="seeker" data-pane data-validate data-register-form data-role="Seeker">
+        <!-- SEEKER FORM: Changed action to register.php -->
+        <form class="register-form" id="seeker" action="backendwithphp/register.php" method="POST">
+          <!-- Hidden input to identify role -->
+          <input type="hidden" name="role_type" value="job_seeker">
+          
           <input class="input" type="text" name="fullName" placeholder="Full Name" aria-label="Full Name" required>
           <input class="input" type="email" name="email" placeholder="Email" aria-label="Email" required>
           <input class="input" type="text" name="title" placeholder="Professional Title" aria-label="Professional Title" required>
           <select class="input" name="skillLevel" aria-label="Skill Level" required>
-        <form class="register-form" id="seeker" data-pane data-validate data-register-form data-role="Seeker">
-          <input class="input" type="text" name="fullName" placeholder="Full Name" aria-label="Full Name" required>
-          <input class="input" type="email" name="email" placeholder="Email" aria-label="Email" required>
-          <input class="input" type="text" name="title" placeholder="Professional Title" aria-label="Professional Title" required>
-          <select class="input" name="skillLevel" aria-label="Skill Level" required>
-            <option selected>Skill Level</option>
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Expert</option>
+            <option value="" selected disabled>Skill Level</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
           </select>
           <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
           <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
           <input class="input" type="text" name="city" placeholder="City" aria-label="City">
           <input class="input" type="text" name="interest" placeholder="Primary Interest (e.g., Frontend)" aria-label="Primary Interest">
           <textarea class="input full" name="bio" style="min-height:110px;" placeholder="Short bio or portfolio links" aria-label="Short bio or portfolio links"></textarea>
-          <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
-          <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
-          <input class="input" type="text" name="city" placeholder="City" aria-label="City">
-          <input class="input" type="text" name="interest" placeholder="Primary Interest (e.g., Frontend)" aria-label="Primary Interest">
-          <textarea class="input full" name="bio" style="min-height:110px;" placeholder="Short bio or portfolio links" aria-label="Short bio or portfolio links"></textarea>
           <div class="register-actions full">
-            <button class="btn btn-ghost" type="button">Reset</button>
+            <button class="btn btn-ghost" type="reset">Reset</button>
             <button class="btn" type="submit">Create Account</button>
           </div>
-          <button class="btn btn-ghost full" type="button" data-google-auth data-role="Seeker">Continue with Google</button>
           <div class="register-note full">Already have an account? <a href="login.html" style="color:var(--accent-teal);font-weight:700;">Sign in</a></div>
         </form>
 
-        <form class="register-form" id="employer" data-pane data-validate data-register-form data-role="Employer" style="display:none;">
+        <!-- EMPLOYER FORM: Changed action to register.php -->
+        <form class="register-form" id="employer" action="backendwithphp/register.php" method="POST" style="display:none;">
+          <!-- Hidden input to identify role -->
+          <input type="hidden" name="role_type" value="company">
+
           <input class="input" type="text" name="company" placeholder="Company Name" aria-label="Company Name" required>
           <input class="input" type="text" name="contactName" placeholder="Contact Name" aria-label="Contact Name" required>
-          <input class="input" type="email" name="workEmail" placeholder="Work Email" aria-label="Work Email" required>
+          <!-- Changed name="workEmail" to name="email" to match handler logic easily, or update handler to check both -->
+          <input class="input" type="email" name="email" placeholder="Work Email" aria-label="Work Email" required>
           <input class="input" type="text" name="role" placeholder="Role (e.g., HR Manager)" aria-label="Role" required>
           <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
           <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
           <select class="input" name="companySize" aria-label="Company Size" required>
-        <form class="register-form" id="employer" data-pane data-validate data-register-form data-role="Employer" style="display:none;">
-          <input class="input" type="text" name="company" placeholder="Company Name" aria-label="Company Name" required>
-          <input class="input" type="text" name="contactName" placeholder="Contact Name" aria-label="Contact Name" required>
-          <input class="input" type="email" name="workEmail" placeholder="Work Email" aria-label="Work Email" required>
-          <input class="input" type="text" name="role" placeholder="Role (e.g., HR Manager)" aria-label="Role" required>
-          <input class="input" type="password" name="password" placeholder="Password" aria-label="Password" required minlength="8">
-          <input class="input" type="password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm Password" required minlength="8">
-          <select class="input" name="companySize" aria-label="Company Size" required>
-            <option selected>Company Size</option>
-            <option>1-10</option>
-            <option>11-50</option>
-            <option>51-200</option>
-            <option>200+</option>
+            <option value="" selected disabled>Company Size</option>
+            <option value="1-10">1-10</option>
+            <option value="11-50">11-50</option>
+            <option value="51-200">51-200</option>
+            <option value="200+">200+</option>
           </select>
           <div class="full" style="display:flex;flex-direction:column;gap:8px;">
             <label class="subtle">Representative</label>
             <div style="display:flex;gap:18px;color:var(--text);flex-wrap:wrap;">
-              <label><input type="radio" name="rep" checked> General manager</label>
-              <label><input type="radio" name="rep"> Representative</label>
+              <label><input type="radio" name="rep" value="General manager" checked> General manager</label>
+              <label><input type="radio" name="rep" value="Representative"> Representative</label>
             </div>
           </div>
-          <div class="full" style="display:flex;flex-direction:column;gap:6px;">
-            <label class="subtle">Trade License</label>
-              <input class="input" type="file" aria-label="Trade License">
-              <input class="input" type="file" aria-label="Trade License">
-          </div>
-          <div class="full" style="display:flex;flex-direction:column;gap:6px;">
-            <label class="subtle">ID Proof</label>
-              <input class="input" type="file" aria-label="ID Proof">
-              <input class="input" type="file" aria-label="ID Proof">
-          </div>
-          <input class="input" type="text" name="country" placeholder="Country" aria-label="Country">
-          <input class="input" type="text" name="city" placeholder="City" aria-label="City">
-          <input class="input" type="text" name="country" placeholder="Country" aria-label="Country">
-          <input class="input" type="text" name="city" placeholder="City" aria-label="City">
+          
+          <input class="input" type="text" name="country" placeholder="Location" aria-label="Country">
           <div class="register-actions full">
-            <button class="btn btn-ghost" type="button">Reset</button>
+            <button class="btn btn-ghost" type="reset">Reset</button>
             <button class="btn" type="submit">Create Employer</button>
           </div>
-          <button class="btn btn-ghost full" type="button" data-google-auth data-role="Employer">Continue with Google</button>
           <div class="register-note full">Need help setting up? <a href="contact.html" style="color:var(--accent-teal);font-weight:700;">Talk to us</a></div>
         </form>
       </div>
@@ -153,7 +112,7 @@
   <script>
     // Simple tab toggle to mirror the signup mock behavior
     const tabs = document.querySelectorAll('.register-tab');
-    const panes = document.querySelectorAll('[data-pane]');
+    const panes = document.querySelectorAll('.register-form');
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
         tabs.forEach(b => b.classList.remove('active'));
@@ -163,11 +122,7 @@
       });
     });
   </script>
-        <script>
-            window.SUPABASE_URL = 'https://rqnrfsdftfmtkguezwxv.supabase.co';
-            window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxbnJmc2RmdGZtdGtndWV6d3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYyNzk0OTcsImV4cCI6MjA4MTg1NTQ5N30.Iem0vrwR0cCqTA6XWXsob8GSPFWrBqOXs98KJKKYN3k';
-        </script>
-        <script src="config.js"></script>
-        <script src="script.js"></script>
+  <script src="script.js"></script>
+<script src="assets/js/responsive.js" defer></script>
 </body>
 </html>
